@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+.env
+
+# CrewAI & ML
+.crewai/
+crewai_logs/
+logs/
+
+# Local state
+runs/
+memory/
+*.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Credentials
+*.pem
+*.key
+.env.local
