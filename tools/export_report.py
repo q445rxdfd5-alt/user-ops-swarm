@@ -102,7 +102,19 @@ def build_executive_summary(run_id: str, artifacts: dict) -> str:
     decision = decision_data.get("decision", "unknown").upper()
     rationale = decision_data.get("rationale", "")[:400]
     final_plan = decision_data.get("final_plan", {})
-    budget_text = decision_data.get("budget", "")[:300]
+    # Budget — use top-level budget_allocation.total first, then budget field
+    budget_alloc = final_plan.get("budget_allocation", {})
+    if isinstance(budget_alloc, dict) and budget_alloc.get("total"):
+        budget_text = f"总预算：{budget_alloc.get('total', '')}"
+        items = budget_alloc.get("itemized", [])
+        if items:
+            budget_lines = [f"- {i.get('item','')}: {i.get('amount','')} ({i.get('percentage','')})"
+                           for i in items if isinstance(i, dict)]
+            budget_text += "\n" + "\n".join(budget_lines[:6])
+    elif final_plan.get("budget"):
+        budget_text = str(final_plan.get("budget", ""))[:300]
+    else:
+        budget_text = "未明确预算"
 
     # Risk level from 06_risk_review.md (primary source)
     risk_text = artifacts.get("06_risk_review", "")
@@ -110,23 +122,32 @@ def build_executive_summary(run_id: str, artifacts: dict) -> str:
     risk_level = risk_match.group(1) if risk_match else "unknown"
     # Fallback: from final decision
     if risk_level == "unknown":
-        risk_match2 = re.search(r'"risk_level"\s*:\s*"([^"]+)"', text)
+        risk_match2 = re.search(r'"risk_level"\s*:\s*"([^"]+)"', risk_text)
         risk_level = risk_match2.group(1) if risk_match2 else "unknown"
 
     # Risk controls
     controls = final_plan.get("risk_controls", [])[-5:] if isinstance(final_plan.get("risk_controls"), list) else []
 
-    # Phases
-    phase_list = final_plan.get("final_plan", final_plan) if isinstance(final_plan, dict) else {}
+    # Phases — try staged_milestones first, fall back to phase_1/2/3
+    phase_list = final_plan.get("staged_milestones", final_plan.get("final_plan", final_plan))
     phases = []
-    for key in ["phase_1", "phase_2", "phase_3"]:
-        p = final_plan.get(key, {})
-        if isinstance(p, dict):
-            phases.append({
-                "name": p.get("name", key),
-                "timeline": p.get("timeline", ""),
-                "objective": p.get("primary_objective", "")
-            })
+    if isinstance(phase_list, dict):
+        for key, p in phase_list.items():
+            if isinstance(p, dict):
+                phases.append({
+                    "name": p.get("name", p.get("date", p.get("target", key))),
+                    "timeline": p.get("timeline", p.get("criteria", p.get("date", ""))),
+                    "objective": p.get("objective", p.get("target", p.get("pass_criteria", "")))[:100]
+                })
+    if not phases:
+        for key in ["phase_1", "phase_2", "phase_3"]:
+            p = final_plan.get(key, {})
+            if isinstance(p, dict):
+                phases.append({
+                    "name": p.get("name", key),
+                    "timeline": p.get("timeline", ""),
+                    "objective": p.get("primary_objective", "")[:100]
+                })
 
     run_date = state.get("progress", {}).get("started_at", datetime.now().isoformat()[:10])
 

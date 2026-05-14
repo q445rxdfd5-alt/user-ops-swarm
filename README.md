@@ -176,10 +176,10 @@ user-ops-swarm/
 │   ├── schemas/         # Pydantic models per artifact
 │   ├── protocols/       # Inter-agent debate, risk, memory protocols
 │   └── utils.py         # YAML loader, run directory, CLI
-├── context/            # Brand config (Wok & Roll template)
+├── context/            # Brand context templates
 ├── memory/             # Human-reviewed long-term memory
 ├── examples/
-│   ├── stress-tests/   # 4 scenario-based test cases
+│   └── stress-tests/   # 15 scenario-based test cases
 │   └── summer-new-product.md
 ├── evaluations/        # Evaluation harness + rubrics + failure library
 ├── runs/               # All run outputs (gitignored)
