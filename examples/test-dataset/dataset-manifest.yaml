@@ -1,0 +1,112 @@
+# User Ops Swarm — Test Dataset
+# 10 scenarios covering the QSR user operations domain.
+# Format: same as examples/stress-tests/*.md
+#
+# Usage:
+#   python main.py --input examples/test-dataset/st-005-competitor-promotion.md
+#   python evaluations/batch_evaluation.py --cases st-005
+#
+# When adding new cases:
+#   1. Follow the header template exactly
+#   2. Include: Situation + Goals + Constraints + Options Under Debate
+#   3. Include at least one internal team disagreement (simulates bull/bear debate trigger)
+#   4. Set a clear numeric target so evaluation can score actionability
+
+dataset:
+  - id: st-005
+    name: Competitor Promotion Counter-Strike
+    category: competitive_response
+    difficulty: medium
+    description: |
+      A competitor launches a 50%-off flash sale targeting your core delivery radius.
+      You have 48 hours to respond. Not reacting means losing ~20% volume for 3 days.
+      Over-reacting means margin destruction.
+
+  - id: st-006
+    name: New Menu Item Launch
+    category: product_launch
+    difficulty: medium-easy
+    description: |
+      Launching a new signature bowl across 22 stores simultaneously.
+      Need to decide: push-to-known (existing members) vs. cold acquisition (new users).
+      Budget is tight. Can only do one channel well.
+
+  - id: st-007
+    name: Negative Review Storm
+    category: crisis_management
+    difficulty: hard
+    description: |
+      A food safety claim goes viral on Xiaohongshu with 50K likes.
+      It's factually questionable but the narrative is compelling.
+      Legal says don't engage publicly. Marketing wants to respond aggressively.
+      Platform relations wants to request takedown.
+
+  - id: st-008
+    name: Delivery Platform Fee Negotiation
+    category: negotiation
+    difficulty: hard
+    description: |
+      Meituan wants to raise commission from 18% to 22%.
+      Your margin is already thin. Compliance means less profit.
+      Walking away means losing 65% of delivery revenue.
+      Have 2 weeks to decide and the account manager is scheduling a call.
+
+  - id: st-009
+    name: Dormant Member — High-Value VIP Churn
+    category: member_management
+    difficulty: medium
+    description: |
+      Top 500 LTV members (avg ¥2,400/year) show unusual drop in order frequency.
+      They haven't churned yet but are clearly cooling off.
+      CFO wants a VIP win-back program. The offer needs to be profitable.
+      This is a different problem from standard dormancy reactivation.
+
+  - id: st-010
+    name: Store Relocation Announcement
+    category: brand_crisis
+    difficulty: medium
+    description: |
+      Closing a store in a high-footfall location, moving 800m away.
+      Regulars will be disrupted. Need to manage the transition without triggering
+      mass unsubscription from the location-based membership segment.
+
+  - id: st-011
+    name: Group Buying Campaign Design
+    category: channel_strategy
+    difficulty: medium-easy
+    description: |
+      Ele.me is offering preferential placement for brands that run group buying deals.
+      You have ¥20K budget for the quarter. The deals need to be profitable.
+      Store managers say fulfillment can't handle more than 200 deals/day.
+      The sales team wants to promise 500 to get the placement deal.
+
+  - id: st-012
+    name: Pricing Audit — Margin Erosion
+    category: financial
+    difficulty: hard
+    description: |
+      Rising ingredient costs mean your best-selling items are now margin-negative.
+      Raising prices risks volume drop. Absorbing costs risks margin erosion.
+      14 items need decisions. Finance wants a recommendation by Friday.
+      Marketing wants to rebrand the price increase as a "quality upgrade."
+
+  - id: st-013
+    name: Cross-Platform Attribution
+    category: analytics
+    difficulty: medium
+    description: |
+      Your WeChat campaigns look great (CTR 8%, 20K clicks) but in-store
+      pickup orders don't reflect the traffic. Marketing claims attribution is broken.
+      Store ops claims the campaign attracted the wrong segment.
+      Data team says attribution model needs a 3-month rebuild.
+      CFO wants to know if WeChat campaigns actually work.
+
+  - id: st-014
+    name: Off-Peak Demand Generation
+    category: demand_generation
+    difficulty: easy
+    description: |
+      Kitchen capacity is idle 40% of the time between 14:00-17:00.
+      Delivery apps don't surface you during off-peak windows.
+      Need to drive 200 extra orders/day in the trough without discounting below margin.
+      Loyalty program team wants to use points redemption. Growth team wants a flash deal.
