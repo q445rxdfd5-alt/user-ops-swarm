@@ -1,196 +1,142 @@
 # User Ops Swarm for QSR
 
-> A bounded multi-agent prototype that simulates a professional restaurant user operations department — as a swarm of specialized AI agents with distinct roles, competing views, and a structured decision process.
+> *A multi-agent AI system that thinks like a restaurant operations team — with built-in debate, risk review, and a director who makes the call.*
 
 ---
 
-## What This Is
+## The Premise
 
-**User Ops Swarm for QSR** is a local, command-line prototype that models a quick-service restaurant (QSR) user operations team as an AI agent system.
+Restaurant marketing isn't a solo task. Your CMO wants reach. Your delivery lead wants conversions. Your store managers want operational sanity. Your finance lead wants margin protected. Someone has to synthesize all of that into a decision — with the clock ticking.
 
-Most AI tools for marketing operations give you one answer. This project tests a different premise: a team of agents — each with a different perspective, mandate, and area of expertise — arguing, challenging, and synthesizing their way toward a better decision than any single agent could reach alone.
+**User Ops Swarm** is an AI research prototype that models a real restaurant operations department as a swarm of specialized agents. Each agent has a distinct voice, a bounded mandate, and a job to do. They don't agree by default. They argue. The swarm forces the conflict, then synthesizes.
 
-It is **not** a SaaS dashboard, a campaign launcher, or a BI tool. It does not connect to live POS systems, delivery platforms, or CRM databases. It is a research prototype for evaluating whether multi-agent organizational mechanics can improve the quality of user operations decision-making.
-
----
-
-## The Problem It Addresses
-
-Restaurant user operations is not a single-threaded task. A real campaign involves built-in tension:
-
-```
-Marketing wants reach.
-Content wants organic spread.
-Delivery wants immediate conversion.
-Group buying wants acquisition at scale.
-Membership wants long-term asset value.
-Stores worry about execution capacity.
-Finance watches margin.
-The director has to decide.
-```
-
-Traditional AI tools collapse all of that into one prompt. This prototype keeps those perspectives separate — and forces them to argue.
+> **What it is:** A command-line decision engine for QSR (quick-service restaurant) user operations — campaign planning, channel strategy, risk review, and final recommendations.
+> **What it is not:** A campaign launcher, a BI dashboard, or a SaaS product. It runs locally. It produces structured markdown artifacts. It doesn't push to live platforms.
 
 ---
 
-## What It Produces
+## What It Actually Does
 
-Given a plain-text task input, the swarm runs through 9 structured steps and produces 8 artifacts per run:
+Drop in a task brief. Get back a structured argument — not a wall of text.
 
-| # | Artifact | What It Contains |
-|---|----------|-----------------|
-| 1 | Context Summary | Task classification, objectives, constraints, open questions |
-| 2 | Opportunity Analysis | User segments, consumption scenarios, channel roles |
-| 3 | Bull / Bear Debate | Growth case vs. risk case — genuine adversarial positions |
+**One run produces 8 artifacts:**
+
+| # | Artifact | Purpose |
+|---|---------|---------|
+| 1 | Context Summary | What are we actually solving? |
+| 2 | Opportunity Analysis | Segments, scenarios, channel roles |
+| 3 | Bull / Bear Debate | Two agents argue — growth case vs. risk case |
 | 4 | Strategy Synthesis | Revised plan after absorbing both sides |
-| 5 | Execution Crew Plans | Campaign, content, delivery, group buying, and membership plans |
-| 6 | Risk Review | Profit, brand, fulfillment, platform, and member asset risks |
-| 7 | Final Decision | Director verdict — approve / revise / reject / test-only |
-| 8 | Memory Candidate | Structured lesson learned for future runs |
+| 5 | Execution Plan | Campaign, content, delivery, group buying, membership — channel-by-channel |
+| 6 | Risk Review | Five dimensions: profit, brand, fulfillment, platform, member asset |
+| 7 | Final Decision | Director verdict: approve / revise / reject / test-only |
+| 8 | Memory Candidate | What we learned — for human review before it goes to long-term memory |
 
-All artifacts are written to a dated `runs/` directory alongside a `state.json` that tracks the full run history. Output is markdown — human-readable and diff-friendly.
+Every artifact is markdown. Every run writes to a timestamped `runs/<run-id>/` directory with a `state.json` log. Human-readable. Diff-friendly. No lock-in.
 
 ---
 
-## Example Scenario
+## What It Looks Like in Practice
 
-> **Input:** Launch a summer new-product acquisition campaign. Goals: new customers, delivery orders, member signups. Constraints: protect margin, keep store operations simple.
+```
+$ python main.py --input examples/stress-tests/st-001-delivery-decline.md
 
-> **Output:** The swarm identifies priority user segments and consumption scenarios, assigns roles to delivery platforms, social media, group buying, and the membership program, generates an aggressive growth case alongside a detailed risk case, synthesizes a revised strategy that balances both, reviews risks across five dimensions, produces a final director decision with success metrics and budget boundaries, and flags key learnings as a memory candidate for human review.
+[STEP 1/9] Loading context... ✓
+[STEP 2/9] User & Scene analysis... ✓
+[STEP 3/9] Bull vs. Bear debate... ✓
+[STEP 4/9] Strategy synthesis... ✓
+[STEP 5/9] Execution Crew (5 agents)... ✓
+[STEP 6/9] Risk review... ✓
+[STEP 7/9] Director decision... ✓
+[STEP 8/9] Memory candidate... ✓
+[STEP 9/9] Writing artifacts... ✓
+
+→ 8 artifacts written to runs/batch-0514-st-001/
+```
+
+The Bull/Bear debate is where the value emerges. The Growth Bull agent pushes for aggressive acquisition. The Growth Bear agent forces a margin reality check. They don't agree — that's the point. The Strategy Manager then synthesizes a plan that survives both perspectives before it ever reaches the Director's desk.
+
+---
+
+## The Evaluation Evidence
+
+This project ships with a full evaluation harness: baseline single-agent vs. swarm comparison, scored against a 6-dimension rubric. Run it yourself:
+
+```
+$ python evaluations/batch_evaluation.py
+```
+
+**First batch results (4 scenarios):**
+
+| Scenario | Baseline | Swarm | Δ |
+|----------|----------|-------|---|
+| Delivery volume crisis | 1.08 | 3.85 | +2.77 |
+| [see batch report] | ... | ... | ... |
+
+The swarm's biggest wins show up in **risk completeness** and **execution actionability** — exactly the dimensions where a multi-agent team with explicit mandates should outperform a single generalist. The gap on **conflict quality** is structural: single agents have no one to argue with.
 
 ---
 
 ## Architecture
 
 ```
-                    user_ops_context.md
-                    memory_log.md
-                    runs/<run_id>/input.md
-                               │
-                    ┌──────────▼──────────┐
-                    │   Context Loader     │
-                    └──────────┬──────────┘
-                               │
-              ┌────────────────┼────────────────┐
-              ▼                                 ▼
-    ┌──────────────────┐              ┌──────────────────┐
-    │ User & Scene     │              │  Channel         │
-    │ Analyst          │              │  Analyst         │
-    └────────┬─────────┘              └────────┬─────────┘
-              └────────────────┼────────────────┘
-                               │
-              ┌────────────────┼────────────────┐
-              ▼                                 ▼
-    ┌──────────────────┐              ┌──────────────────┐
-    │  Growth Bull     │              │  Growth Bear     │
-    │  Agent           │              │  Agent           │
-    └────────┬─────────┘              └────────┬─────────┘
-              └────────────────┼────────────────┘
-                               │
-                    ┌──────────▼──────────┐
-                    │  Strategy Manager    │
-                    └──────────┬──────────┘
-                               │
-                    ┌──────────▼──────────┐
-                    │  Risk Reviewer       │
-                    └──────────┬──────────┘
-                               │
-                    ┌──────────▼──────────┐
-                    │  User Ops Director   │
-                    └──────────┬──────────┘
-                               │
-                    ┌──────────▼──────────┐
-                    │  Reflection Agent   │
-                    └─────────────────────┘
+Input (task brief)
+        │
+  ┌─────▼─────┐
+  │  Context   │  ← Brand config, memory log, run history
+  │  Loader   │
+  └─────┬─────┘
+        │
+  ┌─────▼─────┐
+  │ User Ops  │  ← Scene + Channel analysis
+  │  Flow     │
+  └─────┬─────┘
+        │
+  ┌─────▼─────┐         ┌──────────┐
+  │   Bull    │◄────────►│   Bear   │  ← Structured adversarial debate
+  │  Agent    │  conflict │  Agent   │
+  └─────┬─────┘         └────┬─────┘
+        │                     │
+  ┌─────▼─────────────────────▼─────┐
+  │     Strategy Manager          │  ← Synthesizes, absorbs both sides
+  └────────────┬──────────────────┘
+               │
+  ┌────────────▼──────────┐
+  │  Execution Crew (5)  │  ← Campaign / Content / Delivery / Group Buying / Membership
+  └────────────┬──────────┘
+               │
+  ┌────────────▼──────────┐
+  │    Risk Reviewer     │  ← 5 risk dimensions
+  └────────────┬──────────┘
+               │
+  ┌────────────▼──────────┐
+  │   User Ops Director   │  ← Final verdict
+  └────────────┬──────────┘
+               │
+  ┌────────────▼──────────┐
+  │  Reflection Agent    │  ← Memory candidate (human review gate)
+  └───────────────────────┘
 ```
 
-**Design principles:**
+**12 agents total:**
+- **Decision layer (7):** User & Scene Analyst, Channel Analyst, Growth Bull, Growth Bear, Strategy Manager, Risk Reviewer, User Ops Director
+- **Execution layer (5):** Campaign Planner, Content Creator, Delivery Specialist, Group Buying Strategist, Membership Strategist
 
-- **Flow controls sequence.** A central orchestrator runs steps in order — no free-form agent calling.
-- **State is explicit.** Every step writes to a shared state object and exports to `state.json`. Nothing lives only in a chat context.
-- **Agents have bounded roles.** Each agent has a defined input, a defined output schema, and nothing else.
-- **Memory requires human review.** The Reflection Agent only generates candidates — it never writes to long-term memory automatically.
-- **Execution Crew is Phase 2.** Phase 1 deliberately stops at the Director's decision. Campaign execution is a separate concern.
-
----
-
-## Current Status: Phase 1 Complete
-
-Phase 1 (CrewAI Local Prototype) is implemented and verified:
-
-- 7 agents operational
-- 8-step workflow fully wired and tested
-- 7 artifacts produced per run
-- JSON schemas validate step outputs
-- Runs produce structured markdown + `state.json`
-- Ollama / llama3.2 as default LLM (no API key required)
-
-One test run has been completed (`runs/test-002`). The swarm successfully generated a full debate, produced a director decision, and output a memory candidate.
+All agents defined in YAML. All outputs validated by Pydantic schemas. All state tracked in `state.json`.
 
 ---
 
 ## Tech Stack
 
-```
-Python 3.11+
-CrewAI
-Pydantic
-YAML
-Markdown (input/output)
-Ollama + llama3.2 (default LLM)
-Local filesystem
-```
+| Layer | Choice | Why |
+|-------|--------|-----|
+| Runtime | CrewAI 1.14.4 | Structured agent orchestration with Flow primitives |
+| LLM | Ollama + llama3.2 | Local, no API keys, fast iteration |
+| Schemas | Pydantic 2.0+ | Validated outputs at every step |
+| Artifacts | Markdown | Human-readable, git-diffable, platform-agnostic |
+| State | JSON + filesystem | No database required in Phase 1–3 |
 
-No database, no web frontend, no external API integrations in Phase 1.
-
----
-
-## Roadmap
-
-### Phase 2 — Evaluation Harness
-- Single-agent vs. swarm comparison framework
-- Structured scoring rubrics for quality assessment
-- Failure case library
-- Human review templates for memory candidates
-
-### Phase 3 — Execution Crew
-- Split execution phase into sub-agents: Campaign Planner, Content Creator, Delivery Specialist, Membership Strategist
-- Structured execution plans per channel
-- Timeline and owner notes per artifact
-
-### Phase 4 — Runtime Evaluation
-- Migrate orchestration to LangGraph if CrewAI control proves insufficient
-- Preserve all agent specs, schemas, and artifact formats
-- Add pause / resume / rollback at step boundaries
-
-### Phase 5 — Control Plane (optional)
-- Lightweight local web UI for reviewing runs, approving memory, and triggering new tasks
-- Multi-user session management
-- Long-term memory store with retrieval
-
----
-
-## Getting Started
-
-```bash
-# Clone the repo
-git clone https://github.com/<your-handle>/user-ops-swarm.git
-cd user-ops-swarm
-
-# Install dependencies
-pip install -e .
-
-# Make sure Ollama is running locally with llama3.2
-ollama run llama3.2
-
-# Run the swarm with an example task
-python -m src.flow.user_ops_flow \
-  --input examples/summer-new-product.md \
-  --context context/user_ops_context.md \
-  --memory memory/memory_log.md
-```
-
-Outputs go to `runs/<run_id>/`. Open the generated `state.json` for a full run summary.
+**No external APIs. No API keys. No vendor lock-in.** This runs on a laptop.
 
 ---
 
@@ -199,18 +145,84 @@ Outputs go to `runs/<run_id>/`. Open the generated `state.json` for a full run s
 ```
 user-ops-swarm/
 ├── src/
-│   ├── flow/            # Main orchestration (user_ops_flow.py)
-│   ├── agents/           # Agent YAML definitions
-│   ├── tasks/            # Task YAML definitions
-│   ├── schemas/          # Pydantic models for each artifact
-│   ├── protocols/        # Inter-agent protocol docs
-│   └── utils.py          # Shared helpers
-├── context/              # Brand / business context template
-├── memory/              # Long-term memory log (human-reviewed only)
-├── examples/            # Example task inputs
-├── runs/                # All run outputs (gitignored)
+│   ├── flow/           # Orchestration (CrewAI Flow, 9 steps)
+│   ├── agents/          # 12 YAML agent definitions
+│   ├── tasks/           # 13 YAML task definitions
+│   ├── schemas/         # Pydantic models per artifact
+│   ├── protocols/       # Inter-agent debate, risk, memory protocols
+│   └── utils.py         # YAML loader, run directory, CLI
+├── context/            # Brand config (Wok & Roll template)
+├── memory/             # Human-reviewed long-term memory
+├── examples/
+│   ├── stress-tests/   # 4 scenario-based test cases
+│   └── summer-new-product.md
+├── evaluations/        # Evaluation harness + rubrics + failure library
+├── runs/               # All run outputs (gitignored)
 └── README.md
 ```
+
+---
+
+## Getting Started
+
+```bash
+# 1. Clone and install
+git clone https://github.com/q445rxdfd5-alt/user-ops-swarm.git
+cd user-ops-swarm
+pip install -e .
+
+# 2. Make sure Ollama is running with llama3.2
+ollama serve &
+ollama pull llama3.2
+
+# 3. Run the swarm on a stress-test scenario
+python main.py --input examples/stress-tests/st-001-delivery-decline.md
+
+# 4. Run the evaluation harness
+python evaluations/batch_evaluation.py
+
+# 5. Check the report
+cat evaluations/reports/batches/batch-*/report.json
+```
+
+---
+
+## Roadmap
+
+### Phase 1 ✅ — Core Swarm (Local, CrewAI)
+9-step workflow, 12 agents, YAML-based, Ollama LLM, fully operational.
+
+### Phase 2 ✅ — Evaluation Infrastructure
+Baseline vs. swarm comparison, 6-dimension rubric, failure case library, human review templates. First evaluation: swarm scores 3.85/5 vs. baseline 1.08/5 (+2.77 delta).
+
+### Phase 3 ✅ — Execution Crew
+Five specialized execution agents: Campaign, Content, Delivery, Group Buying, Membership. Execution plans are now full channel-by-channel artifacts with timelines and owners.
+
+### Phase 4 — LangGraph Migration *(planned)*
+If CrewAI control proves insufficient for pause/resume/rollback, migrate orchestration to LangGraph while preserving all agent specs, schemas, and artifact formats.
+
+### Phase 5 — Control Plane *(planned)*
+Local web viewer for reviewing runs, approving memory candidates, triggering new tasks, and browsing the long-term memory store.
+
+---
+
+## Contributing Stress-Test Scenarios
+
+Add a new `.md` file to `examples/stress-tests/`. The file should include:
+
+```
+# ST-XXX: [Short Title]
+
+## Situation          ← What's happening right now
+## Goals (Ranked)     ← What success looks like
+## Constraints        ← Non-negotiables
+## Options Under Debate ← 2-4 specific alternatives
+## Critical Question  ← The one question the swarm must answer
+## Success Metrics    ← How we measure success
+## Anti-Goals         ← What NOT to do
+```
+
+See existing scenarios in `examples/stress-tests/` for the full format and level of detail expected.
 
 ---
 
