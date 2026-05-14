@@ -1,0 +1,49 @@
+description: |
+  Generate adversarial attack scenarios against the input case to stress-test the decision-making process.
+  
+  Select the appropriate red team agent based on scenario type:
+  - competitor_red: For price war, negative review campaigns, platform bans, traffic hijacking, public opinion warfare
+  - crisis_red: For food safety incidents, public opinion explosions, platform algorithm changes, policy risks, key personnel departures
+  - boundary_red: For zero budget acquisition, 24-hour launch, single-person operation of 100 stores (resource constraints)
+  
+  The red team agent will:
+  1. Analyze the input scenario and identify attack vectors
+  2. Generate specific adversarial scenarios (not vague threats)
+  3. Map our vulnerabilities and exposure levels
+  4. Propose countermeasures and detection methods
+  5. Output structured JSON with attack details
+
+  Receive as input:
+  - Input file with the scenario to attack
+  - Context and memory from the system
+
+expected_output: |
+  JSON output with structure matching the selected red team agent's output_json_format:
+  
+  For competitor_red:
+  - attack_type: Category of competitive attack
+  - competitor_move: Specific action, resource_requirement, timeline, target_audience
+  - our_vulnerability: exposure_level, weak_point, dependency_chain
+  - counter_measure: prevention, detection, response_playbook, resource_cost
+  - severity: Overall threat severity
+  
+  For crisis_red:
+  - crisis_type: Category of crisis scenario
+  - timeline_pressure: Response windows and deadlines
+  - cascade_effect: Primary impact, secondary effects, stakeholder_impact
+  - decision_weakness: Bottleneck, information_gap, authority_vacuum
+  - speed_requirement: Minimum/target response times, improvement recommendations
+  
+  For boundary_red:
+  - constraint_type: Category of constraint
+  - resource_gap: Current vs required state, gap_magnitude
+  - asymmetric_opportunity: Leverage point, competitor_blindspot, viral_mechanism
+  - creative_solution: Core approach, step_by_step, tool_leverage
+  - feasibility: success_probability, time_to_result, scalability, failure_modes
+
+agent: Auto-selected (competitor_red | crisis_red | boundary_red based on scenario type)
+
+tools:
+  - read_file
+
+output_file: "runs/{run_id}/red_attack.json"

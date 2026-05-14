@@ -1,0 +1,38 @@
+description: |
+  Quality Review task — Blue team quality assurance of the decision output.
+  
+  This task reviews the final decision output from three quality dimensions:
+  1. Structural integrity: Is the proposal well-organized and complete?
+  2. Logical consistency: Are the arguments sound and coherent?
+  3. Execution feasibility: Can this actually be implemented as described?
+  
+  The quality_blue agent will:
+  1. Evaluate structural completeness (all required sections present, proper hierarchy)
+  2. Check logical consistency (no contradictions, sound assumptions, valid inference chains)
+  3. Assess execution feasibility (resources available, timeline realistic, dependencies clear)
+  4. Distinguish fatal flaws (must fix) from improvement opportunities (should fix)
+  5. Provide specific, actionable improvement suggestions
+  6. Rate each dimension on a 0-10 scale with clear rationale
+  
+  Receive as input:
+  - The final decision output to review
+  - All prior analysis and debate artifacts
+
+expected_output: |
+  JSON output with structure:
+  - review_id: Unique identifier for this quality review
+  - proposal_id: Proposal or strategy being reviewed
+  - structural_score: 0-10 score for structural completeness
+  - logic_score: 0-10 score for logical consistency
+  - execution_score: 0-10 score for implementation feasibility
+  - quality_issues: Array of {dimension, severity, issue, location, impact}
+  - improvement_suggestions: Array of {target_dimension, suggestion, priority, estimated_impact}
+  - overall_quality_verdict: approved | needs_revision | rejected
+  - summary: Concise summary of quality review findings
+
+agent: QualityReviewer
+
+tools:
+  - read_file
+
+output_file: "runs/{run_id}/blue_quality_review.json"

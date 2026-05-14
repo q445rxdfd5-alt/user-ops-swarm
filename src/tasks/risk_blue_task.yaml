@@ -1,0 +1,37 @@
+description: |
+  Risk Blue Team task — Secondary risk review after decision.
+  
+  This task performs post-decision secondary risk review. Unlike the risk_reviewer who evaluates strategies BEFORE approval, this task performs defensive depth review:
+  1. Verify known risks have adequate mitigation measures in place
+  2. Identify unknown blind spots: risks the team may not have considered
+  3. Assess kill_switch effectiveness: can it actually stop the plan if needed?
+  4. Challenge mitigation assumptions: are they realistic under stress?
+  5. Consider second-order effects: what happens when mitigations fail?
+  6. Provide specific additional mitigation recommendations when gaps found
+  
+  The risk_blue agent thinks like an adversary: "what could go wrong that they haven't considered?"
+  
+  Receive as input:
+  - The final decision with risk review already completed
+  - Red team attack scenarios (if available)
+  - All prior analysis artifacts
+
+expected_output: |
+  JSON output with structure:
+  - review_id: Unique identifier for this blue team review
+  - proposal_id: Strategy or plan being blue teamed
+  - known_risk_adequate: Boolean — whether identified risks have sufficient mitigations
+  - known_risk_gaps: Array of {risk, current_mitigation, gap, severity}
+  - unknown_blind_spots: Array of {blind_spot, likelihood, potential_impact, category}
+  - kill_switch_effective: Boolean — whether kill_switch can halt execution
+  - kill_switch_assessment: {defined, triggers_clear, can_stop_execution, tested, gaps}
+  - additional_mitigations: Array of {addresses_risk, mitigation, priority, implementation_effort}
+  - blue_team_verdict: cleared | needs_work | high_risk
+  - summary: Concise summary of blue team findings
+
+agent: RiskBlueTeam
+
+tools:
+  - read_file
+
+output_file: "runs/{run_id}/blue_risk_review.json"
