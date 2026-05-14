@@ -120,9 +120,10 @@ Examples:
         "02_opportunity_analysis.md",
         "03_bull_bear_debate.md",
         "04_strategy_summary.md",
-        "05_risk_review.md",
-        "06_final_decision.md",
-        "07_memory_candidate.md",
+        "05_execution_plan.md",
+        "06_risk_review.md",
+        "07_final_decision.md",
+        "08_memory_candidate.md",
     ]
     print("\nArtifacts:")
     for a in artifacts:
