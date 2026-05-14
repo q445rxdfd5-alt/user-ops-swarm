@@ -1,0 +1,28 @@
+description: |
+  Load and parse the user-provided input file to extract the core task, objectives, 
+  and context. Validate the input format, identify any ambiguous sections, and 
+  produce a structured context summary that downstream agents can consume. If the 
+  input references external files or URLs, note them for subsequent tasks.
+
+  Input sources:
+  - Primary: User task file specified via --input argument
+  - Context: Default context from context/user_ops_context.md
+  - Memory: Historical patterns from memory/memory_log.md (if exists)
+
+expected_output: |
+  A structured context summary containing:
+  1. Task type classification (e.g., new product launch, feature request, market expansion)
+  2. Key objectives extracted from the input
+  3. Target user segments mentioned
+  4. Business constraints or requirements
+  5. Success criteria if specified
+  6. List of external references that need investigation
+  7. Any ambiguities flagged for downstream clarification
+
+agent: UserSceneAnalyst
+
+tools:
+  - read_file
+  - search_files
+
+output_file: "runs/{run_id}/01_context_summary.md"

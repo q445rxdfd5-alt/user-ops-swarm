@@ -1,0 +1,39 @@
+description: |
+  This task is part of the bull_bear_debate CREW and runs in parallel with bull_argument.yaml.
+  
+  As the Growth Bear Agent, rigorously challenge the growth opportunities identified in
+  opportunity_analysis. Surface what the bull does not want to hear: the competitor who
+  will respond, the assumption that won't hold, the cost that will double, the timeline
+  that will slip. Challenge with evidence, not pessimism.
+
+  Receive as input:
+  - Context summary from context_loading
+  - User scene analysis from opportunity_analysis
+  - Channel analysis from opportunity_analysis
+  - Bull arguments from bull_argument (for rebuttal)
+
+  Produce structured objections to the bull case with counter-evidence.
+
+expected_output: |
+  For each bull opportunity challenged:
+  - Challenge ID and reference to challenged opportunity ID
+  - Core objection articulated clearly
+  - Objection type (execution_risk, strategic_risk, market_risk, financial_risk, 
+    competitive_risk, assumption_failure)
+  - Evidence contradicting the bull thesis
+  - Hidden costs identified:
+    - Cost item, estimated impact, probability, category
+  - Failure scenarios with:
+    - Scenario description, probability, impact severity, early warning signs
+  - Counter-proposals with alternatives and tradeoffs
+  - Where the bear concedes the bull has a point
+  - Verdict: block, revise, proceed_with_caution, or withdraw
+
+  Format as structured JSON matching the agent's output_json_format specification.
+
+agent: GrowthBearAgent
+
+tools:
+  - read_file
+
+output_file: "runs/{run_id}/03_bull_bear_debate.md"

@@ -1,0 +1,42 @@
+description: |
+  Provide final approval, revision, rejection, or test-only authorization for strategies
+  that have survived bull/bear debate and risk review.
+  
+  As the Strategic Director, make the final call. Consider organizational context,
+  strategic fit, and resource availability.
+  
+  Receive as input:
+  - Complete deliberation record: all previous outputs
+  - Strategies from strategy_synthesis
+  - Risk reviews from risk_review
+
+  Choose exactly one decision for each strategy: approve, revise, reject, or test_only.
+
+expected_output: |
+  For each strategy decided:
+  - Decision ID and strategy reference
+  - Director decision: approve, revise, reject, or test_only
+  - Decision rationale referencing the deliberation record
+  - Deliberation summary:
+    - Bull consensus
+    - Bear objections addressed
+    - Risk review outcome
+    - Outstanding concerns
+  - Revision requirements if decision is 'revise':
+    - Specific requirement, priority (critical/high/medium/low), suggestion
+  - Test parameters if decision is 'test_only':
+    - Test scope, sample size, success criteria
+    - Go threshold (metric value to proceed)
+    - No-go threshold (metric value to terminate)
+    - Test duration in weeks
+  - Memory candidate (NOT auto-written, for external processing):
+    - Insight type, content, evidence basis, preservation priority, tags
+  - Next steps based on decision
+  - Confidence in decision: very_confident, confident, neutral, uncertain
+
+agent: DirectorReflectionAgent
+
+tools:
+  - read_file
+
+output_file: "runs/{run_id}/06_final_decision.md"

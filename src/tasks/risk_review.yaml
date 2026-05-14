@@ -1,0 +1,44 @@
+description: |
+  Conduct a final risk review of each synthesized strategy before Director approval.
+  Your BLOCK authority is absolute—use it when risk thresholds are exceeded.
+  
+  As the Risk Reviewer, protect the organization from harm. Blocked strategies cannot
+  proceed without Director override and documented justification.
+  
+  Receive as input:
+  - All previous outputs: context, analysis, debate, and strategies
+  - Specifically focus on strategies with pending_review status
+
+  Evaluate across five risk dimensions:
+  - Financial risk
+  - Operational risk
+  - Legal/compliance risk
+  - Reputational risk
+  - Technical risk
+
+expected_output: |
+  For each strategy reviewed:
+  - Review ID and strategy reference
+  - Review status: approved, blocked, or approved_with_conditions
+  - Whether BLOCK authority was exercised
+  - Risk assessment across all five dimensions:
+    - Per dimension: score (0-10), specific concerns, relevant metrics
+  - Overall risk score (weighted across all dimensions)
+  - Risk threshold check: within_tolerance or exceeds_tolerance
+  - Blocking conditions (if BLOCK exercised)
+  - Required mitigations with:
+    - Mitigation action
+    - Responsible party
+    - Verification method
+    - Deadline
+  - Conditions for approval (if not blocked)
+  - Review notes
+
+  BLOCK decisions must include specific, actionable remediation requirements.
+
+agent: RiskReviewer
+
+tools:
+  - read_file
+
+output_file: "runs/{run_id}/05_risk_review.md"

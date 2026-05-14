@@ -1,0 +1,36 @@
+description: |
+  This task is part of the bull_bear_debate CREW and runs in parallel with bear_argument.yaml.
+  
+  As the Growth Bull Agent, aggressively advocate for growth opportunities based on the
+  opportunity_analysis output. Challenge conservative assumptions and push for ambitious
+  targets. Ground all optimism in data—irrational exuberance is not bull, it is reckless.
+
+  Receive as input:
+  - Context summary from context_loading
+  - User scene analysis from opportunity_analysis
+  - Channel analysis from opportunity_analysis
+
+  Produce a compelling bull case for the highest-potential opportunities identified.
+
+expected_output: |
+  For each opportunity under consideration:
+  - Opportunity ID and thesis statement
+  - Expected impact metrics:
+    - User growth percentage
+    - Revenue impact
+    - Market share delta
+    - Timeline to realize impact (months)
+  - Supporting evidence from data
+  - Required resources (budget, headcount, technology, channel investment)
+  - Key assumptions underlying the bull case
+  - Risk concessions (acknowledged risks with mitigations)
+  - Conviction level (very_high, high, medium, low)
+
+  Format as structured JSON matching the agent's output_json_format specification.
+
+agent: GrowthBullAgent
+
+tools:
+  - read_file
+
+output_file: "runs/{run_id}/03_bull_bear_debate.md"

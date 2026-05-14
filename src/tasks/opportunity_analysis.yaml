@@ -1,0 +1,46 @@
+description: |
+  This is a CREW-level task that runs UserSceneAnalyst and ChannelAnalyst in parallel.
+  Both agents analyze the context_summary from the previous task, each from their distinct perspective.
+
+  UserSceneAnalyst responsibilities:
+  - Identify and articulate specific user problems, behaviors, and contexts driving decisions
+  - Surface unmet needs and pain points with precision
+  - Distinguish between user-reported and inferred pain points
+  - Flag assumptions explicitly
+
+  ChannelAnalyst responsibilities:
+  - Evaluate effectiveness, reach, and conversion potential of each channel
+  - Identify channel alignment with target user segments
+  - Provide quantitative metrics where available
+  - Distinguish between organic and paid channel performance
+
+  Both agents receive the same context_summary as input and produce their analyses independently.
+
+expected_output: |
+  Two parallel outputs that are merged into a single report:
+
+  Part A - User Scene Analysis:
+  - Scene ID and problem statement
+  - User segments affected
+  - Pain points with severity and frequency ratings
+  - Evidence sources cited
+  - Explicitly flagged assumptions
+  - Confidence level
+
+  Part B - Channel Analysis:
+  - Per-channel evaluation with unique channel ID
+  - Channel type classification (social, search, display, etc.)
+  - Target segments most likely to convert
+  - Performance metrics (reach, conversion rate, CAC, LTV, ROI)
+  - Fit score (0-10) with current strategic objective
+  - Channel-specific risks and recommendations
+
+agents:
+  - UserSceneAnalyst
+  - ChannelAnalyst
+
+tools:
+  - read_file
+  - mcp_one_search_one_search
+
+output_file: "runs/{run_id}/02_opportunity_analysis.md"

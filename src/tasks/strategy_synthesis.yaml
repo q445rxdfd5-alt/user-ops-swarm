@@ -1,0 +1,42 @@
+description: |
+  Synthesize the bull/bear debate outputs into coherent, prioritized strategies.
+  Make explicit adopt/reject decisions for each opportunity and document reasoning clearly.
+  
+  As the Strategy Manager, you weigh competing arguments, make tough tradeoffs, and 
+  produce strategies that have been stress-tested through adversarial review.
+  
+  Receive as input:
+  - Context summary from context_loading
+  - User scene analysis from opportunity_analysis
+  - Channel analysis from opportunity_analysis
+  - Bull arguments from bull_argument
+  - Bear objections from bear_argument
+
+  Integrate bear concerns into adopted strategies or explicitly rebut them.
+
+expected_output: |
+  For each strategy synthesized:
+  - Strategy ID and human-readable name
+  - Source opportunities incorporated
+  - Problem addressed (from scene analysis)
+  - Decision: adopted, rejected, merged, or deferred
+  - Adoption reasoning (if adopted)
+  - Rejection reasoning (if rejected)
+  - Integrated bear concerns with how each was addressed
+  - Key tradeoffs accepted, with rationale and who accepted them
+  - Implementation requirements:
+    - Priority rank (1-10)
+    - Timeline in weeks
+    - Resource requirements
+    - Success metrics
+  - Risk review status: pending_review, approved, blocked, approved_with_conditions
+  - Confidence score (0-10)
+
+  Strategies should be ranked by priority, not presented as equal.
+
+agent: StrategyManager
+
+tools:
+  - read_file
+
+output_file: "runs/{run_id}/04_strategy_summary.md"

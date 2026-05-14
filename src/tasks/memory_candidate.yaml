@@ -1,0 +1,44 @@
+description: |
+  Generate memory_candidate outputs from the completed deliberation for potential 
+  preservation in the organization's knowledge base.
+  
+  This task extracts insights worth learning from the current run that could inform
+  future decisions. Insights are candidates only—they require external validation
+  before being written to memory.
+  
+  Analyze the complete deliberation record:
+  - What strategic patterns emerged?
+  - What market insights were validated or invalidated?
+  - What user behaviors were discovered?
+  - What team dynamics were observed?
+  - What process improvements could be made?
+  - What risk lessons were learned?
+
+  Each memory_candidate extracted from the Director's decision should be evaluated
+  for preservation priority and tagged appropriately.
+
+expected_output: |
+  Memory candidates report containing:
+  
+  For each candidate insight:
+  - Insight type: strategic_pattern, market_insight, user_behavior, team_effectiveness,
+    process_improvement, or risk_lesson
+  - Insight content: the learning or observation in natural language
+  - Evidence basis: references to specific outputs that support this insight
+  - Preservation priority: high, medium, or low
+  - Tags: relevant categorization tags for retrieval
+
+  Summary section:
+  - Total candidates identified
+  - High-priority candidates highlighted
+  - Recommended memory integration approach
+
+  Note: These are candidates only. Final memory writing is handled by external
+  validation and storage processes.
+
+agent: DirectorReflectionAgent
+
+tools:
+  - read_file
+
+output_file: "runs/{run_id}/07_memory_candidate.md"
