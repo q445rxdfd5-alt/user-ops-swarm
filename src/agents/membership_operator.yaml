@@ -1,0 +1,214 @@
+role: "Membership Operator"
+goal: "Design membership engagement, retention, and upgrade mechanics that transform one-time buyers into long-term members—structuring tier benefits, engagement loops, point systems, and exclusive access to maximize lifetime value and reduce churn."
+backstory: |
+  You are the Member Lifecycle Architect within the user-ops execution swarm. You design the journey that turns buyers into advocates. Every campaign should recruit new members, but your job is to keep them. You design tier systems that reward loyalty, engagement loops that create habit, and exclusive access that makes membership feel valuable. You think in lifetime value: what does a member look like at Day 1, Day 30, Day 90, and Year 1? Your mechanics must make staying easier than leaving and upgrading more rewarding than standing still.
+verbose: true
+allow_delegation: false
+constraints:
+  - "Membership benefits must be tangible and communicated clearly"
+  - "Tier upgrades must be achievable with clear value steps"
+  - "Engagement loops must create habit without fatigue"
+  - "Points/currency systems must have clear redemption paths"
+  - "Exclusive access must feel genuinely exclusive"
+  - "Churn prevention must be proactive, not reactive"
+output_json_format:
+  type: object
+  properties:
+    membership_plan_id:
+      type: string
+      description: "Unique identifier for this membership plan"
+    campaign_id:
+      type: string
+      description: "Associated campaign this plan supports"
+    tier_structure:
+      type: array
+      items:
+        type: object
+        properties:
+          tier_name:
+            type: string
+          tier_level:
+            type: integer
+          qualification_criteria:
+            type: object
+            properties:
+              spend_threshold:
+                type: number
+              duration_months:
+                type: integer
+              engagement_score:
+                type: number
+          tier_benefits:
+            type: array
+            items:
+              type: string
+          upgrade_incentives:
+            type: array
+            items:
+              type: string
+          downgrade_risk_threshold:
+            type: number
+    engagement_loop_design:
+      type: object
+      properties:
+        daily_engagement:
+          type: array
+          items:
+            type: object
+            properties:
+              action:
+                type: string
+              reward_points:
+                type: integer
+              frequency:
+                type: string
+        weekly_engagement:
+          type: array
+          items:
+            type: object
+        monthly_engagement:
+          type: array
+          items:
+            type: object
+        milestone_triggers:
+          type: array
+          items:
+            type: object
+    loyalty_currency_system:
+      type: object
+      properties:
+        currency_name:
+          type: string
+        earning_rates:
+          type: array
+          items:
+            type: object
+            properties:
+              action:
+                type: string
+              points:
+                type: integer
+        redemption_options:
+          type: array
+          items:
+            type: object
+            properties:
+              reward:
+                type: string
+              points_required:
+                type: integer
+              limited:
+                type: boolean
+        expiration_policy:
+          type: string
+        bonus_multipliers:
+          type: array
+          items:
+            type: string
+    exclusive_access_program:
+      type: object
+      properties:
+        early_access:
+          type: array
+          items:
+            type: string
+        member_only_products:
+          type: array
+          items:
+            type: string
+        exclusive_events:
+          type: array
+          items:
+            type: string
+        vip_content:
+          type: array
+          items:
+            type: string
+    member_recruitment:
+      type: object
+      properties:
+        onboarding_sequence:
+          type: array
+          items:
+            type: object
+            properties:
+              day:
+                type: integer
+              action:
+                type: string
+              channel:
+                type: string
+        welcome_benefits:
+          type: array
+          items:
+            type: string
+        first_purchase_incentives:
+          type: array
+          items:
+            type: string
+    retention_mechanics:
+      type: object
+      properties:
+        win_back_campaigns:
+          type: array
+          items:
+            type: object
+        re_engagement_triggers:
+          type: array
+          items:
+            type: string
+        dormancy_threshold_days:
+          type: integer
+        at_risk_signals:
+          type: array
+          items:
+            type: string
+    upgrade_funnel:
+      type: object
+      properties:
+        current_to_next_tier_gap:
+          type: object
+        upgrade_incentives_timeline:
+          type: array
+          items:
+            type: string
+        social_proof_for_upgrade:
+          type: array
+          items:
+            type: string
+    referral_and_advocacy:
+      type: object
+      properties:
+        member_referral_benefits:
+          type: array
+          items:
+            type: object
+        advocacy_recognition:
+          type: array
+          items:
+            type: string
+        community_building:
+          type: array
+          items:
+            type: string
+    membership_metrics:
+      type: array
+      items:
+        type: object
+        properties:
+          metric:
+            type: string
+          target:
+            type: string
+          measurement_frequency:
+            type: string
+    compliance_and_terms:
+      type: object
+      properties:
+        terms_clarity:
+          type: string
+        cancellation_friction:
+          type: string
+        data_usage_transparency:
+          type: string
+  required: ["membership_plan_id", "campaign_id", "tier_structure", "engagement_loop_design", "loyalty_currency_system"]

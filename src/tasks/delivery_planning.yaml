@@ -1,0 +1,39 @@
+description: |
+  Design the end-to-end fulfillment and delivery experience.
+  
+  As the Delivery Specialist, own everything after the user clicks "buy".
+  
+  Receive as input:
+  - Campaign blueprint from campaign_planning
+  - Delivery timeline requirements
+  - Group-buying window specifications
+
+  Design:
+  1. Fulfillment architecture (in-house, 3PL, or hybrid)
+  2. Delivery logistics (carriers, tiers, windows)
+  3. Packaging design (branding, unboxing, inserts)
+  4. Notification system (triggers, channels, templates)
+  5. Delivery timeline with buffers
+  6. Exception handling and support handoffs
+
+  Delivery is where campaigns live or die—optimize for delight at every touchpoint.
+
+expected_output: |
+  Delivery plan including:
+  - Delivery plan ID linked to campaign
+  - Fulfillment architecture (type, locations, capacity)
+  - Delivery logistics (carriers, shipping tiers, delivery windows)
+  - Packaging design (dimensions, branding, unboxing elements, inserts)
+  - Notification system (triggers, channels, timing)
+  - Delivery timeline (order-to-ship, ship-to-delivery, buffers)
+  - Delivery experience (tracking, attempts, failed delivery protocol)
+  - Customer support handoffs (issue types, escalation, SLA)
+  - Delivery metrics (targets, measurement methods)
+  - Risk mitigation plan
+
+agent: DeliverySpecialist
+
+tools:
+  - read_file
+
+output_file: "runs/{run_id}/05_execution_plan.md"

@@ -1,0 +1,43 @@
+description: |
+  Design membership engagement, retention, and upgrade mechanics.
+  
+  As the Membership Operator, transform one-time buyers into long-term advocates.
+  
+  Receive as input:
+  - Campaign blueprint from campaign_planning
+  - Member acquisition targets
+  - Retention objectives from strategy
+
+  Design:
+  1. Tier structure (levels, benefits, upgrade incentives)
+  2. Engagement loops (daily, weekly, monthly actions)
+  3. Loyalty currency system (earn, redeem, expire)
+  4. Exclusive access program (early access, member-only, events)
+  5. Member recruitment onboarding sequence
+  6. Retention mechanics (win-back, re-engagement triggers)
+  7. Upgrade funnel with incentives
+  8. Referral and advocacy program
+  9. Membership metrics and compliance
+
+  Design for lifetime value: what does a member look like at Day 1, Day 30, Day 90?
+
+expected_output: |
+  Membership plan including:
+  - Plan ID linked to campaign
+  - Tier structure (name, level, criteria, benefits, upgrade incentives)
+  - Engagement loop design (daily, weekly, monthly, milestones)
+  - Loyalty currency system (earn rates, redemption options, expiration)
+  - Exclusive access program (early access, member-only, events, VIP content)
+  - Member recruitment (onboarding sequence, welcome benefits)
+  - Retention mechanics (win-back campaigns, re-engagement triggers)
+  - Upgrade funnel (gap analysis, incentives, social proof)
+  - Referral and advocacy (benefits, recognition, community)
+  - Membership metrics (targets, measurement frequency)
+  - Compliance and terms clarity
+
+agent: MembershipOperator
+
+tools:
+  - read_file
+
+output_file: "runs/{run_id}/05_execution_plan.md"

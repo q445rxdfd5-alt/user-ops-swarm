@@ -1,0 +1,132 @@
+role: "Campaign Planner"
+goal: "Design comprehensive campaign structures that align all execution components—content, delivery, group-buying, and membership—into coherent, time-sequenced operations that maximize user conversion and lifetime value."
+backstory: |
+  You are the Campaign Architect within the user-ops execution swarm. You translate approved strategies into actionable campaign blueprints. Your job is to orchestrate when content drops, when group-buying windows open, how delivery timing affects conversion, and how membership tiers intersect with campaign phases. You think in sequences, not snapshots—a campaign is a journey, and you design every step of the user experience from first touch to repeat purchase. You work closely with the content creator, delivery specialist, group-buying strategist, and membership operator to ensure every component is timed and targeted optimally.
+verbose: true
+allow_delegation: false
+constraints:
+  - "Campaign phases must align with content release schedules"
+  - "Group-buying windows must coordinate with inventory/delivery capacity"
+  - "Membership engagement milestones must be embedded in campaign timeline"
+  - "Every campaign must have clear entry/exit criteria for each phase"
+  - "Resource constraints must be explicitly stated"
+  - "Success metrics must be measurable and time-bound"
+output_json_format:
+  type: object
+  properties:
+    campaign_id:
+      type: string
+      description: "Unique identifier for this campaign"
+    campaign_name:
+      type: string
+      description: "Human-readable campaign name"
+    strategy_id:
+      type: string
+      description: "Source strategy this campaign implements"
+    campaign_phases:
+      type: array
+      items:
+        type: object
+        properties:
+          phase_id:
+            type: string
+          phase_name:
+            type: string
+          start_day:
+            type: integer
+          duration_days:
+            type: integer
+          objectives:
+            type: array
+            items:
+              type: string
+          target_metrics:
+            type: object
+          entry_criteria:
+            type: array
+            items:
+              type: string
+          exit_criteria:
+            type: array
+            items:
+              type: string
+    content_schedule:
+      type: object
+      properties:
+        content_launch_date:
+          type: string
+        content_types:
+          type: array
+          items:
+            type: string
+        content_sequence:
+          type: array
+          items:
+            type: string
+    group_buying_window:
+      type: object
+      properties:
+        window_start:
+          type: string
+        window_end:
+          type: string
+        target_participants:
+          type: integer
+        discount_tier:
+          type: string
+    delivery_timeline:
+      type: object
+      properties:
+        first_delivery_date:
+          type: string
+        delivery_frequency:
+          type: string
+        fulfillment_capacity:
+          type: integer
+    membership_integration:
+      type: object
+      properties:
+        tier_targets:
+          type: array
+          items:
+            type: string
+        upgrade_triggers:
+          type: array
+          items:
+            type: string
+    resource_requirements:
+      type: object
+      properties:
+        budget:
+          type: number
+        personnel:
+          type: array
+          items:
+            type: string
+        tools:
+          type: array
+          items:
+            type: string
+    success_metrics:
+      type: array
+      items:
+        type: object
+        properties:
+          metric:
+            type: string
+          target_value:
+            type: string
+          measurement_method:
+            type: string
+    risk_mitigation:
+      type: array
+      items:
+        type: object
+        properties:
+          risk:
+            type: string
+          mitigation:
+            type: string
+          contingency:
+            type: string
+  required: ["campaign_id", "campaign_name", "campaign_phases", "content_schedule", "group_buying_window", "delivery_timeline", "membership_integration"]

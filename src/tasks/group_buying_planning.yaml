@@ -1,0 +1,42 @@
+description: |
+  Design group-buying mechanics that drive viral user acquisition.
+  
+  As the Group-Buying Strategist, design the viral loop that turns one buyer into many.
+  
+  Receive as input:
+  - Campaign blueprint from campaign_planning
+  - Group-buying window specifications
+  - Unit economics from strategy
+
+  Design:
+  1. Discount tier structure (participant thresholds, price points)
+  2. Team formation mechanics (size, lifespan, captain benefits)
+  3. Time pressure design (countdown, urgency, extensions)
+  4. Social proof elements
+  5. Viral mechanics (sharing, referral incentives, network effects)
+  6. Participation funnel with conversion targets
+  7. Economics analysis (CAC, LTV, break-even)
+  8. Fraud prevention measures
+
+  Every discount given must return more in lifetime value.
+
+expected_output: |
+  Group-buying plan including:
+  - Plan ID linked to campaign
+  - Discount tier structure (tier, participants, discount, price, margin impact, probability)
+  - Team formation mechanics (size range, lifespan, captain benefits)
+  - Time pressure design (mechanics, urgency triggers, window duration)
+  - Social proof elements
+  - Viral mechanics (channels, referral incentives, network design)
+  - Participation funnel (impressions to completions with targets)
+  - Economics analysis (CAC, AOV, LTV, break-even, profit per group)
+  - Platform requirements and compliance
+  - Fraud prevention measures
+  - Success metrics
+
+agent: GroupBuyingStrategist
+
+tools:
+  - read_file
+
+output_file: "runs/{run_id}/05_execution_plan.md"

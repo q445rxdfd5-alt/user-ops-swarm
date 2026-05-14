@@ -1,7 +1,7 @@
 """
 User Ops Swarm — Main Orchestration Flow
 
-An 8-step CrewAI-based workflow that simulates a professional restaurant
+A 9-step CrewAI-based workflow that simulates a professional restaurant
 user operations department as a bounded multi-agent decision system.
 
 Steps:
@@ -10,9 +10,10 @@ Steps:
     3. opportunity_analysis → parallel: UserSceneAnalyst + ChannelAnalyst
     4. bull_bear_debate  → parallel: GrowthBullAgent + GrowthBearAgent
     5. strategy_manager  → StrategyManager absorbs debate
-    6. risk_review       → RiskReviewer blocks / modifies / approves
-    7. director_decision → User Ops Director final verdict
-    8. reflection        → Memory candidate for human review
+    6. execution_crew    → parallel: CampaignPlanner + ContentCreator + DeliverySpecialist + GroupBuyingStrategist + MembershipOperator
+    7. risk_review       → RiskReviewer blocks / modifies / approves
+    8. director_decision → User Ops Director final verdict
+    9. reflection        → Memory candidate for human review
 """
 
 from __future__ import annotations
@@ -67,9 +68,10 @@ ARTIFACTS = {
     "opportunity_analysis": "02_opportunity_analysis.md",
     "bull_bear_debate": "03_bull_bear_debate.md",
     "strategy_summary": "04_strategy_summary.md",
-    "risk_review": "05_risk_review.md",
-    "final_decision": "06_final_decision.md",
-    "memory_candidate": "07_memory_candidate.md",
+    "execution_plan": "05_execution_plan.md",
+    "risk_review": "06_risk_review.md",
+    "final_decision": "07_final_decision.md",
+    "memory_candidate": "08_memory_candidate.md",
 }
 
 # ---------------------------------------------------------------------------
@@ -81,6 +83,7 @@ WORKFLOW_STEPS = [
     "opportunity_analysis",
     "bull_bear_debate",
     "strategy_manager",
+    "execution_crew",
     "risk_review",
     "director_decision",
     "reflection",
@@ -107,6 +110,7 @@ class SwarmState(BaseModel):
     opportunity_analysis: Optional[str] = None
     bull_bear_debate: Optional[str] = None
     strategy_summary: Optional[str] = None
+    execution_plan: Optional[str] = None
     risk_review: Optional[str] = None
     final_decision: Optional[str] = None
     memory_candidate: Optional[str] = None
@@ -129,6 +133,13 @@ AGENT_FILES = {
     "growth_bull_agent": "growth_bull_agent.yaml",
     "growth_bear_agent": "growth_bear_agent.yaml",
     "strategy_manager": "strategy_manager.yaml",
+    # Execution Crew agents
+    "campaign_planner": "campaign_planner.yaml",
+    "content_creator": "content_creator.yaml",
+    "delivery_specialist": "delivery_specialist.yaml",
+    "group_buying_strategist": "group_buying_strategist.yaml",
+    "membership_operator": "membership_operator.yaml",
+    # Review and decision agents
     "risk_reviewer": "risk_reviewer.yaml",
     "director_reflection_agent": "director_reflection_agent.yaml",
 }
@@ -172,7 +183,7 @@ def _build_context_prompt(state: SwarmState, step: str) -> str:
     if step == "strategy_manager" and state.bull_bear_debate:
         lines += ["---", "## BULL/BEAR DEBATE", state.bull_bear_debate]
 
-    if step in ("risk_review", "director_decision") and state.strategy_summary:
+    if step in ("risk_review", "director_decision", "execution_crew") and state.strategy_summary:
         lines += ["---", "## STRATEGY SUMMARY", state.strategy_summary]
 
     if step == "director_decision":
@@ -236,7 +247,7 @@ def _text_to_markdown(text: str, title: str, step: str) -> str:
 # ---------------------------------------------------------------------------
 class UserOpsFlow:
     """
-    Orchestrates the full 8-step User Ops Swarm workflow.
+    Orchestrates the full 9-step User Ops Swarm workflow.
 
     Usage:
         flow = UserOpsFlow()
@@ -278,6 +289,7 @@ class UserOpsFlow:
             self._run_opportunity_analysis()
             self._run_bull_bear_debate()
             self._run_strategy_manager()
+            self._run_execution_crew()
             self._run_risk_review()
             self._run_director_decision()
             self._run_reflection()
@@ -346,7 +358,7 @@ class UserOpsFlow:
             ),
         )
         self._persist_state()
-        print(f"[Step 1/8] initialize — run_id={self.state.run_id}")
+        print(f"[Step 1/9] initialize — run_id={self.state.run_id}")
 
     # ------------------------------------------------------------------
     # Step 2 — Load Context
@@ -420,7 +432,7 @@ Then output the complete context summary as JSON in this exact format:
             self._update_run_state_step("load_context", "completed",
                                         output_file=f"{self.state.run_dir}/{ARTIFACTS['context_summary']}")
 
-            print(f"[Step 2/8] load_context — ✓")
+            print(f"[Step 2/9] load_context — ✓")
 
         except Exception as e:
             self._handle_step_error("load_context", e)
@@ -468,7 +480,7 @@ Then output the complete context summary as JSON in this exact format:
             self.state.opportunity_analysis = raw_output
             self._update_run_state_step("opportunity_analysis", "completed",
                                         output_file=f"{self.state.run_dir}/{ARTIFACTS['opportunity_analysis']}")
-            print(f"[Step 3/8] opportunity_analysis — ✓")
+            print(f"[Step 3/9] opportunity_analysis — ✓")
 
         except Exception as e:
             self._handle_step_error("opportunity_analysis", e)
@@ -525,7 +537,7 @@ Then output the complete context summary as JSON in this exact format:
             self.state.bull_bear_debate = raw_output
             self._update_run_state_step("bull_bear_debate", "completed",
                                         output_file=f"{self.state.run_dir}/{ARTIFACTS['bull_bear_debate']}")
-            print(f"[Step 4/8] bull_bear_debate — ✓")
+            print(f"[Step 4/9] bull_bear_debate — ✓")
 
         except Exception as e:
             self._handle_step_error("bull_bear_debate", e)
@@ -562,17 +574,143 @@ Then output the complete context summary as JSON in this exact format:
             self.state.strategy_summary = raw_output
             self._update_run_state_step("strategy_manager", "completed",
                                         output_file=f"{self.state.run_dir}/{ARTIFACTS['strategy_summary']}")
-            print(f"[Step 5/8] strategy_manager — ✓")
+            print(f"[Step 5/9] strategy_manager — ✓")
 
         except Exception as e:
             self._handle_step_error("strategy_manager", e)
             raise
 
     # ------------------------------------------------------------------
-    # Step 6 — Risk Review
+    # Step 6 — Execution Crew (Campaign Planner + Content Creator + 
+    #           Delivery Specialist + Group-Buying Strategist + Membership Operator)
+    # ------------------------------------------------------------------
+    def _run_execution_crew(self) -> None:
+        """Run 5 execution planning agents in parallel to produce the execution plan."""
+        self.state.current_step = "execution_crew"
+        self._update_run_state_step("execution_crew", "in_progress",
+                                     agent_name="ExecutionCrew (5 agents)")
+
+        try:
+            from crewai import Agent, Task, Crew
+            from crewai.agents.agent_builder.base_agent import BaseAgent
+
+            # Load all 5 execution agents
+            campaign_agent: BaseAgent = _load_agent("campaign_planner")
+            content_agent: BaseAgent = _load_agent("content_creator")
+            delivery_agent: BaseAgent = _load_agent("delivery_specialist")
+            groupbuy_agent: BaseAgent = _load_agent("group_buying_strategist")
+            membership_agent: BaseAgent = _load_agent("membership_operator")
+
+            prompt = _build_context_prompt(self.state, "execution_crew")
+
+            # Campaign Planner task
+            task_campaign = Task(
+                description=prompt + """
+
+## YOUR ROLE: CAMPAIGN PLANNER
+Design the comprehensive campaign structure that orchestrates all execution components.
+Translate the approved strategy into an actionable campaign blueprint with phases, 
+content schedule, group-buying windows, delivery timeline, and membership integration.
+Output as JSON with campaign_id, campaign_phases, content_schedule, group_buying_window,
+delivery_timeline, membership_integration, resource_requirements, success_metrics.""",
+                expected_output="JSON with campaign_id, campaign_phases, content_schedule, group_buying_window, delivery_timeline, membership_integration",
+                agent=campaign_agent,
+            )
+
+            # Content Creator task
+            task_content = Task(
+                description=prompt + """
+
+## YOUR ROLE: CONTENT CREATOR
+Design all content assets required for the campaign execution.
+Be the voice and face of the campaign—design copy, visuals, video, and UGC templates
+for all channels. Ensure content supports group-buying viral mechanics.
+Output as JSON with content_plan_id, content_themes, content_assets, channel_content_map,
+group_buying_content, content_calendar.""",
+                expected_output="JSON with content_plan_id, content_assets, channel_content_map, group_buying_content, content_calendar",
+                agent=content_agent,
+            )
+
+            # Delivery Specialist task
+            task_delivery = Task(
+                description=prompt + """
+
+## YOUR ROLE: DELIVERY SPECIALIST
+Design the end-to-end fulfillment and delivery experience.
+Everything after the user clicks "buy" is your domain—fulfillment, packaging,
+notifications, delivery windows, and post-delivery follow-up.
+Output as JSON with delivery_plan_id, fulfillment_architecture, delivery_logistics,
+packaging_design, notification_system, delivery_timeline.""",
+                expected_output="JSON with delivery_plan_id, fulfillment_architecture, delivery_logistics, packaging_design, notification_system",
+                agent=delivery_agent,
+            )
+
+            # Group-Buying Strategist task
+            task_groupbuy = Task(
+                description=prompt + """
+
+## YOUR ROLE: GROUP-BUYING STRATEGIST
+Design group-buying mechanics that drive viral user acquisition.
+Design discount tiers, team formation dynamics, time pressure, and social proof
+to maximize participation while maintaining healthy unit economics.
+Output as JSON with group_buying_plan_id, discount_tier_structure, team_formation_mechanics,
+time_pressure_design, viral_mechanics, participation_funnel, economics_analysis.""",
+                expected_output="JSON with group_buying_plan_id, discount_tier_structure, team_formation_mechanics, economics_analysis",
+                agent=groupbuy_agent,
+            )
+
+            # Membership Operator task
+            task_membership = Task(
+                description=prompt + """
+
+## YOUR ROLE: MEMBERSHIP OPERATOR
+Design membership engagement, retention, and upgrade mechanics.
+Transform one-time buyers into long-term advocates with tier systems,
+engagement loops, and exclusive access.
+Output as JSON with membership_plan_id, tier_structure, engagement_loop_design,
+loyalty_currency_system, exclusive_access_program, retention_mechanics.""",
+                expected_output="JSON with membership_plan_id, tier_structure, engagement_loop_design, loyalty_currency_system",
+                agent=membership_agent,
+            )
+
+            # Run all 5 agents in parallel (separate crews)
+            crew_campaign = Crew(agents=[campaign_agent], tasks=[task_campaign], verbose=True)
+            crew_content = Crew(agents=[content_agent], tasks=[task_content], verbose=True)
+            crew_delivery = Crew(agents=[delivery_agent], tasks=[task_delivery], verbose=True)
+            crew_groupbuy = Crew(agents=[groupbuy_agent], tasks=[task_groupbuy], verbose=True)
+            crew_membership = Crew(agents=[membership_agent], tasks=[task_membership], verbose=True)
+
+            result_campaign = crew_campaign.kickoff()
+            result_content = crew_content.kickoff()
+            result_delivery = crew_delivery.kickoff()
+            result_groupbuy = crew_groupbuy.kickoff()
+            result_membership = crew_membership.kickoff()
+
+            # Combine all outputs into execution plan
+            raw_output = "\n\n".join([
+                "## CAMPAIGN PLANNING\n" + str(result_campaign),
+                "## CONTENT CREATION\n" + str(result_content),
+                "## DELIVERY PLANNING\n" + str(result_delivery),
+                "## GROUP-BUYING PLANNING\n" + str(result_groupbuy),
+                "## MEMBERSHIP PLANNING\n" + str(result_membership),
+            ])
+
+            self._save_artifact("execution_plan", ARTIFACTS["execution_plan"], raw_output,
+                                "ExecutionCrew (5 agents)")
+            self.state.execution_plan = raw_output
+            self._update_run_state_step("execution_crew", "completed",
+                                        output_file=f"{self.state.run_dir}/{ARTIFACTS['execution_plan']}")
+            print(f"[Step 6/9] execution_crew — ✓")
+
+        except Exception as e:
+            self._handle_step_error("execution_crew", e)
+            raise
+
+    # ------------------------------------------------------------------
+    # Step 7 — Risk Review
     # ------------------------------------------------------------------
     def _run_risk_review(self) -> None:
-        """RiskReviewer assesses the strategy and may BLOCK the run."""
+        """RiskReviewer assesses the execution plan and may BLOCK the run."""
         self.state.current_step = "risk_review"
         self._update_run_state_step("risk_review", "in_progress",
                                      agent_name="RiskReviewer")
@@ -585,7 +723,7 @@ Then output the complete context summary as JSON in this exact format:
             prompt = _build_context_prompt(self.state, "risk_review")
 
             task = Task(
-                description=prompt + "\n\n## YOUR ROLE: RISK REVIEWER\nReview the strategy from every risk dimension: profit, brand, fulfillment, platform, member assets. Your BLOCK decision is absolute. Output as JSON with risk_level and required_changes.",
+                description=prompt + "\n\n## YOUR ROLE: RISK REVIEWER\nReview the execution plan from every risk dimension: profit, brand, fulfillment, platform, member assets. Your BLOCK decision is absolute. Focus on the campaign_planning, content_creation, delivery_planning, group_buying_planning, and membership_planning outputs. Output as JSON with risk_level and required_changes.",
                 expected_output="JSON with risk_level (low/medium/high/block), profit_risk, brand_risk, fulfillment_risk, platform_risk, member_asset_risk, required_changes, approval_condition, reviewer_recommendation",
                 agent=risk_agent,
             )
@@ -601,10 +739,10 @@ Then output the complete context summary as JSON in this exact format:
                 if risk_level == "block":
                     self.state.risk_approved = False
                     self.state.error = f"BLOCK: Risk Reviewer blocked the run. Changes required: {parsed.get('required_changes', [])}"
-                    print(f"[Step 6/8] risk_review — BLOCKED")
+                    print(f"[Step 7/9] risk_review — BLOCKED")
                 else:
                     self.state.risk_approved = True
-                    print(f"[Step 6/8] risk_review — {risk_level.upper()} (proceeding)")
+                    print(f"[Step 7/9] risk_review — {risk_level.upper()} (proceeding)")
 
             self._save_artifact("risk_review", ARTIFACTS["risk_review"], raw_output, "RiskReviewer")
             self.state.risk_review = raw_output
@@ -616,7 +754,7 @@ Then output the complete context summary as JSON in this exact format:
             raise
 
     # ------------------------------------------------------------------
-    # Step 7 — Director Decision
+    # Step 8 — Director Decision
     # ------------------------------------------------------------------
     def _run_director_decision(self) -> None:
         """Director makes the final verdict: approve / revise / reject / test-only."""
@@ -666,20 +804,20 @@ Output as JSON:
             # Print the decision
             parsed = _parse_json_from_text(raw_output)
             decision = parsed.get("decision", "unknown") if parsed else "unknown"
-            print(f"[Step 7/8] director_decision — {decision.upper()}")
+            print(f"[Step 8/9] director_decision — {decision.upper()}")
 
         except Exception as e:
             self._handle_step_error("director_decision", e)
             raise
 
     # ------------------------------------------------------------------
-    # Step 8 — Reflection / Memory Candidate
+    # Step 9 — Reflection / Memory Candidate
     # ------------------------------------------------------------------
     def _run_reflection(self) -> None:
         """Reflection Agent extracts reusable learnings. NOT auto-written to memory."""
         self.state.current_step = "reflection"
         self._update_run_state_step("reflection", "in_progress",
-                                     agent_name="ReflectionAgent")
+                                    agent_name="ReflectionAgent")
 
         try:
             from crewai import Agent, Task, Crew
@@ -720,7 +858,7 @@ Output memory candidates for human review. Format as JSON:
             self.state.memory_candidate = raw_output
             self._update_run_state_step("reflection", "completed",
                                         output_file=f"{self.state.run_dir}/{ARTIFACTS['memory_candidate']}")
-            print(f"[Step 8/8] reflection — ✓ (memory_candidate ready for human review)")
+            print(f"[Step 9/9] reflection — ✓ (memory_candidate ready for human review)")
 
         except Exception as e:
             self._handle_step_error("reflection", e)

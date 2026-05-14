@@ -1,0 +1,37 @@
+description: |
+  Design all content assets required for the campaign execution.
+  
+  As the Content Creator, be the voice and face of the campaign.
+  
+  Receive as input:
+  - Campaign blueprint from campaign_planning
+  - Strategy summary
+  - Content schedule requirements
+
+  Design:
+  1. Content themes aligned with campaign objectives
+  2. All content assets (copy, visual, video, UGC templates)
+  3. Channel-specific content adaptations
+  4. Group-buying content (invitation, urgency, referral)
+  5. Content calendar with production timelines
+
+  Every piece of content has a job: attract, educate, persuade, or retain.
+
+expected_output: |
+  Content plan including:
+  - Content plan ID linked to campaign
+  - Core content themes
+  - All content assets (ID, name, type, channel, purpose, key message, target segment, timeline)
+  - Channel content map (social, email, messaging, delivery)
+  - Group-buying content (templates, urgency triggers, referral incentives, viral mechanics)
+  - Content calendar (date, content ID, channel, status)
+  - Identified content gaps
+  - Production requirements (budget, team, tools)
+  - Content metrics per asset
+
+agent: ContentCreator
+
+tools:
+  - read_file
+
+output_file: "runs/{run_id}/05_execution_plan.md"

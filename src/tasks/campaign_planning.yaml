@@ -1,0 +1,38 @@
+description: |
+  Design the comprehensive campaign structure that orchestrates all execution components.
+  
+  As the Campaign Planner, translate the approved strategy into an actionable campaign blueprint.
+  
+  Receive as input:
+  - Strategy summary from strategy_manager
+  - Context summary from context_loading
+  - Opportunity analysis results
+  - Bull/bear debate insights
+
+  Design:
+  1. Campaign phases with clear entry/exit criteria
+  2. Content release schedule aligned with phases
+  3. Group-buying window timing and targets
+  4. Delivery timeline and fulfillment capacity
+  5. Membership integration points
+
+  Ensure all components are time-sequenced and resource-constrained.
+
+expected_output: |
+  Campaign blueprint including:
+  - Campaign ID and name linked to source strategy
+  - Campaign phases (with start day, duration, objectives, metrics)
+  - Content schedule (launch date, types, sequence)
+  - Group-buying window (timing, participant targets, discount tier)
+  - Delivery timeline (first delivery, frequency, capacity)
+  - Membership integration (tier targets, upgrade triggers)
+  - Resource requirements (budget, personnel, tools)
+  - Success metrics (measurable, time-bound)
+  - Risk mitigation plan
+
+agent: CampaignPlanner
+
+tools:
+  - read_file
+
+output_file: "runs/{run_id}/05_execution_plan.md"
