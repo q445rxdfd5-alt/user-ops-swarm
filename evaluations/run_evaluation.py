@@ -171,6 +171,13 @@ def generate_baseline(input_file: str, run_id: str) -> Path:
     """
     from crewai import Agent, Task, Crew
 
+    # Use Ollama LLM
+    try:
+        from crewai import LLM
+        llm = LLM(model="ollama/llama3.2", base_url="http://localhost:11434/v1")
+    except Exception:
+        llm = None
+
     # Read all inputs
     input_path = Path(input_file)
     context_path = PROJECT_ROOT / "context" / "user_ops_context.md"
@@ -197,6 +204,7 @@ def generate_baseline(input_file: str, run_id: str) -> Path:
         backstory="You are a senior user operations director. You have full context. Generate a complete strategy without debate or deliberation.",
         verbose=True,
         allow_delegation=False,
+        llm=llm,
     )
 
     task = Task(

@@ -39,6 +39,25 @@ from src.utils import (
     update_step_status,
 )
 
+# Default LLM: Ollama with llama3.2 (local, no API key needed)
+_OLLAMA_LLM = None
+
+
+def _get_llm():
+    """Get or create the Ollama LLM instance."""
+    global _OLLAMA_LLM
+    if _OLLAMA_LLM is None:
+        try:
+            from crewai import LLM
+            _OLLAMA_LLM = LLM(
+                model="ollama/llama3.2",
+                base_url="http://localhost:11434/v1",
+            )
+        except Exception as e:
+            print(f"[WARNING] Could not initialize Ollama LLM: {e}")
+            _OLLAMA_LLM = None
+    return _OLLAMA_LLM
+
 
 # ---------------------------------------------------------------------------
 # Artifact filenames
@@ -116,12 +135,13 @@ AGENT_FILES = {
 
 
 def _load_agent(name: str) -> Any:
-    """Load a CrewAI Agent from YAML definition."""
+    """Load a CrewAI Agent from YAML definition, configured with Ollama LLM."""
     from crewai import Agent
     agents_dir = Path(__file__).parent.parent / "agents"
     path = agents_dir / AGENT_FILES[name]
     yaml_def = load_yaml(path)
-    return create_agent_from_yaml(yaml_def)
+    llm = _get_llm()
+    return create_agent_from_yaml(yaml_def, llm=llm)
 
 
 # ---------------------------------------------------------------------------
@@ -371,22 +391,23 @@ Then output the complete context summary as JSON in this exact format:
 ```"""
 
             # Execute via a simple Crew (single agent, no crew needed here)
-            crew_agent = Agent(
+            loader_agent = Agent(
                 role="Context Loader",
                 goal="Synthesize all input files into a structured context summary for downstream agents.",
                 backstory="You are a data integrator responsible for reading and synthesizing all available context—task input, brand context, and historical memory—into a coherent summary that every other agent in the swarm will use as their starting point.",
                 verbose=True,
                 allow_delegation=False,
+                llm=_get_llm(),
             )
 
             task = Task(
                 description=prompt,
                 expected_output="Markdown context summary + JSON block",
-                agent=crew_agent,
+                agent=loader_agent,
             )
 
             from crewai import Crew
-            crew = Crew(agents=[crew_agent], tasks=[task], verbose=True)
+            crew = Crew(agents=[loader_agent], tasks=[task], verbose=True)
             result = crew.kickoff()
 
             raw_output = str(result) if result else ""
@@ -417,7 +438,6 @@ Then output the complete context summary as JSON in this exact format:
         try:
             from crewai import Agent, Task, Crew
             from crewai.agents.agent_builder.base_agent import BaseAgent
-            from crewai.agents.utils import AgentsCompletions
 
             scene_agent: BaseAgent = _load_agent("user_scene_analyst")
             channel_agent: BaseAgent = _load_agent("channel_analyst")
@@ -436,14 +456,12 @@ Then output the complete context summary as JSON in this exact format:
                 agent=channel_agent,
             )
 
-            crew = Crew(
-                agents=[scene_agent, channel_agent],
-                tasks=[task_scene, task_channel],
-                process="parallel",
-                verbose=True,
-            )
-            result = crew.kickoff()
-            raw_output = str(result) if result else ""
+            # Run Scene and Channel as separate crews (no Process.parallel in crewai 1.14.4)
+            crew_scene = Crew(agents=[scene_agent], tasks=[task_scene], verbose=True)
+            crew_channel = Crew(agents=[channel_agent], tasks=[task_channel], verbose=True)
+            result_scene = crew_scene.kickoff()
+            result_channel = crew_channel.kickoff()
+            raw_output = f"## USER SCENE ANALYSIS\n{str(result_scene)}\n\n## CHANNEL ANALYSIS\n{str(result_channel)}"
 
             self._save_artifact("opportunity_analysis", ARTIFACTS["opportunity_analysis"], raw_output,
                                 "UserSceneAnalyst + ChannelAnalyst")
@@ -486,14 +504,21 @@ Then output the complete context summary as JSON in this exact format:
                 agent=bear_agent,
             )
 
-            crew = Crew(
-                agents=[bull_agent, bear_agent],
-                tasks=[task_bull, task_bear],
-                process="parallel",
+            # Run Bull and Bear as separate sequential crews to avoid
+            # crewai 1.14.4 not having Process.parallel
+            crew_bull = Crew(
+                agents=[bull_agent],
+                tasks=[task_bull],
                 verbose=True,
             )
-            result = crew.kickoff()
-            raw_output = str(result) if result else ""
+            crew_bear = Crew(
+                agents=[bear_agent],
+                tasks=[task_bear],
+                verbose=True,
+            )
+            result_bull = crew_bull.kickoff()
+            result_bear = crew_bear.kickoff()
+            raw_output = f"## BULL POSITION\n{str(result_bull)}\n\n## BEAR POSITION\n{str(result_bear)}"
 
             self._save_artifact("bull_bear_debate", ARTIFACTS["bull_bear_debate"], raw_output,
                                 "GrowthBullAgent + GrowthBearAgent")

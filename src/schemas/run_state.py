@@ -32,8 +32,8 @@ class StepStatus(BaseModel):
 class ArtifactReference(BaseModel):
     """Reference to an artifact produced during the run."""
     artifact_id: str = Field(description="Unique identifier for this artifact")
-    artifact_type: Literal["context_summary", "opportunity_analysis", "debate_state",
-                         "strategy_summary", "risk_review", "final_decision", 
+    artifact_type: Literal["context_summary", "opportunity_analysis", "bull_bear_debate",
+                         "strategy_summary", "risk_review", "final_decision",
                          "memory_candidate", "execution_plan", "other"] = Field(
         description="Type of artifact"
     )

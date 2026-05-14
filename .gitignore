@@ -33,4 +33,8 @@ memory/
 # Credentials
 *.pem
 *.key
+
+# Environment
+.env
 .env.local
+*.env
