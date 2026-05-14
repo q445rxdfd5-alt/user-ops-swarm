@@ -40,24 +40,63 @@ from src.utils import (
     update_step_status,
 )
 
-# Default LLM: Ollama with llama3.2 (local, no API key needed)
-_OLLAMA_LLM = None
+# Default LLM: MiniMax M2.5 (primary), Ollama (fallback)
+_llm_instance = None
+
+
+def _load_env(key: str, default: str = "") -> str:
+    """Read env var, checking .env file if not in os.environ."""
+    import os
+    val = os.environ.get(key)
+    if val:
+        return val
+    # Try dotenv — use absolute path to avoid CWD dependency
+    # __file__ = .../src/flow/user_ops_flow.py
+    # parent = .../src/flow
+    # parent.parent = .../src
+    # parent.parent.parent = project root (has .env)
+    env_path = Path(__file__).resolve().parent.parent.parent / ".env"
+    if env_path.exists():
+        for line in env_path.read_text().splitlines():
+            if line.startswith(f"{key}="):
+                return line.split("=", 1)[1].strip().strip('"\'')
+    return default
 
 
 def _get_llm():
-    """Get or create the Ollama LLM instance."""
-    global _OLLAMA_LLM
-    if _OLLAMA_LLM is None:
+    """Get or create the LLM instance. Prefers MiniMax, falls back to Ollama."""
+    global _llm_instance
+    if _llm_instance is not None:
+        return _llm_instance
+
+    from crewai import LLM
+
+    api_key = _load_env("MINIMAX_API_KEY")
+    if api_key:
+        base_url = _load_env("MINIMAX_BASE_URL", "https://api.minimax.chat/v1")
+        model = _load_env("MINIMAX_MODEL", "MiniMax-M2.1")
         try:
-            from crewai import LLM
-            _OLLAMA_LLM = LLM(
-                model="ollama/llama3.2",
-                base_url="http://localhost:11434/v1",
+            _llm_instance = LLM(
+                model=model,
+                base_url=base_url,
+                api_key=api_key,
             )
+            print(f"[LLM] Using MiniMax: {model}")
+            return _llm_instance
         except Exception as e:
-            print(f"[WARNING] Could not initialize Ollama LLM: {e}")
-            _OLLAMA_LLM = None
-    return _OLLAMA_LLM
+            print(f"[WARNING] Could not initialize MiniMax LLM: {e}")
+
+    # Fallback to Ollama
+    try:
+        model = _load_env("OLLAMA_MODEL", "llama3.2")
+        base_url = _load_env("OLLAMA_BASE_URL", "http://localhost:11434/v1")
+        _llm_instance = LLM(model=f"ollama/{model}", base_url=base_url)
+        print(f"[LLM] Using Ollama: {model}")
+        return _llm_instance
+    except Exception as e:
+        print(f"[WARNING] Could not initialize Ollama LLM: {e}")
+        _llm_instance = None
+    return _llm_instance
 
 
 # ---------------------------------------------------------------------------
