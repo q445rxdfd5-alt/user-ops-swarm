@@ -229,6 +229,8 @@ def _build_context_prompt(state: SwarmState, step: str) -> str:
     if step == "director_decision":
         if state.risk_review:
             lines += ["---", "## RISK REVIEW", state.risk_review]
+        if state.bull_bear_debate:
+            lines += ["---", "## BULL/BEAR DEBATE", state.bull_bear_debate]
         if state.opportunity_analysis:
             lines += ["---", "## OPPORTUNITY ANALYSIS", state.opportunity_analysis]
 
@@ -634,21 +636,46 @@ Then output the complete context summary as JSON in this exact format:
                 agent=bear_agent,
             )
 
-            # Run Bull and Bear as separate sequential crews to avoid
-            # crewai 1.14.4 not having Process.parallel
+            # Phase 1: Bull runs first
             crew_bull = Crew(
                 agents=[bull_agent],
                 tasks=[task_bull],
                 verbose=True,
             )
+            result_bull = crew_bull.kickoff()
+            bull_output = str(result_bull)
+
+            # Phase 2: Bear challenges Bull's specific points
+            bear_prompt = (
+                prompt
+                + "\n\n## BULL POSITION (from your opponent)\n"
+                + bull_output
+                + "\n\n## YOUR ROLE: GROWTH BEAR\n"
+                + "Your job is to DIRECTLY CHALLENGE the Bull's arguments above. "
+                + "Do NOT write an independent analysis — quote specific Bull claims and refute them. "
+                + "For each Bull claim: state what they said, why you disagree, and what should change. "
+                + "Be adversarial. Output as JSON."
+            )
+            task_bear_challenge = Task(
+                description=bear_prompt,
+                expected_output="JSON with bear_thesis, key_objections (each quoting a specific Bull claim), "
+                               "risk_scenarios, must_change_items, blockers",
+                agent=bear_agent,
+            )
             crew_bear = Crew(
                 agents=[bear_agent],
-                tasks=[task_bear],
+                tasks=[task_bear_challenge],
                 verbose=True,
             )
-            result_bull = crew_bull.kickoff()
             result_bear = crew_bear.kickoff()
-            raw_output = f"## BULL POSITION\n{str(result_bull)}\n\n## BEAR POSITION\n{str(result_bear)}"
+            bear_output = str(result_bear)
+
+            raw_output = (
+                "## BULL POSITION\n"
+                + bull_output
+                + "\n\n## BEAR COUNTER (directly challenges Bull above)\n"
+                + bear_output
+            )
 
             self._save_artifact("bull_bear_debate", ARTIFACTS["bull_bear_debate"], raw_output,
                                 "GrowthBullAgent + GrowthBearAgent")
@@ -678,8 +705,20 @@ Then output the complete context summary as JSON in this exact format:
             prompt = _build_context_prompt(self.state, "strategy_manager")
 
             task = Task(
-                description=prompt + "\n\n## YOUR ROLE: STRATEGY MANAGER\nSynthesize the bull and bear arguments into a revised, balanced strategy. Be explicit about what you adopted and what you rejected. Output as JSON.",
-                expected_output="JSON with strategy_summary, adopted_bull_points, adopted_bear_points, rejected_points, revised_strategy, recommended_scope, test_plan",
+                description=(
+                    prompt
+                    + "\n\n## BULL/BEAR DEBATE OUTPUT\n"
+                    + self.state.bull_bear_debate
+                    + "\n\n## YOUR ROLE: STRATEGY MANAGER\n"
+                    + "Synthesize the bull and bear arguments into a revised strategy. "
+                    + "You MUST quote specific Bull claims and explain whether you adopt or reject each. "
+                    + "You MUST quote specific Bear objections and explain how you address them. "
+                    + "Be explicit: adopted_bull_points and adopted_bear_points must cite specific claims. "
+                    + "Output as JSON."
+                ),
+                expected_output="JSON with strategy_summary, adopted_bull_points (with Bull quote), "
+                               "adopted_bear_points (with Bear quote), rejected_points (with quote), "
+                               "revised_strategy, recommended_scope, test_plan",
                 agent=manager_agent,
             )
 
