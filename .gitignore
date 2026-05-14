@@ -41,3 +41,17 @@ memory/
 .env
 .env.local
 *.env
+
+# Debug artifacts
+debug_llm.py
+
+# Batch evaluation artifacts (generated, not source)
+evaluations/baselines/batch-*/
+evaluations/reports/batches/*.json
+
+# Individual run outputs
+runs/*/
+
+# Python cache
+__pycache__/
+*.pyc
