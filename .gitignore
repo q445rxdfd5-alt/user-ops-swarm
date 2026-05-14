@@ -18,6 +18,9 @@ logs/
 runs/
 memory/
 *.json
+# Exception: evaluation artifacts are versioned
+!evaluations/**/*.json
+!evaluations/rubrics/*.json
 
 # IDE
 .vscode/

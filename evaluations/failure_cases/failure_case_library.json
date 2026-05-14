@@ -1,0 +1,76 @@
+{
+  "failure_cases": [
+    {
+      "id": "conflict_collapse_001",
+      "title": "Bull/Bear Debate Resolved Without Consensus",
+      "category": "conflict_collapse",
+      "description": "The bull and bear agents reach opposing conclusions but the debate protocol fails to trigger the synthesis phase. The system accepts the last argument as the final decision without reconciling the conflict.",
+      "root_cause": "Debate protocol's consensus threshold is misconfigured. The conflict detection logic exits early when confidence scores diverge beyond a set delta without forcing synthesis.",
+      "signal": "Strategy summary shows conflicting recommendations with no reconciliation section. Log contains alternating bull/bear dominance with no synthesis event.",
+      "recovery_action": "Re-run debate protocol with explicit consensus requirement. Set max_iterations=3 before forcing synthesis. Add conflict_resolution_summary field to final_decision schema."
+    },
+    {
+      "id": "risk_miss_002",
+      "title": "Compliance Risk Flagged but Not Escalated",
+      "category": "risk_miss",
+      "description": "The risk_reviewer identifies a regulatory compliance issue in the membership_planning task but the flag is logged without blocking downstream execution. The delivery_specialist proceeds with a non-compliant offer structure.",
+      "root_cause": "Risk review protocol operates in advisory mode only. No hard dependency exists between risk_reviewer output and task continuation gates.",
+      "signal": "Risk review output contains CRITICAL flag but execution continues. Downstream logs show no risk acknowledgment. Final decision includes the flagged element.",
+      "recovery_action": "Implement blocking risk gates in flow.py. Any CRITICAL risk must produce explicit accept/reject artifact before proceeding. Add risk_clearance field to run_state."
+    },
+    {
+      "id": "execution_drift_003",
+      "title": "Agent Scope Creep Beyond Original Task Brief",
+      "category": "execution_drift",
+      "description": "The content_creator expands the campaign scope from a single promotional post to a full content calendar spanning 3 platforms. The director_reflection_agent does not catch the scope expansion.",
+      "root_cause": "Task brief boundaries are not enforced in agent prompts. Content_creator has excessive autonomy without guardrails tied to original user request.",
+      "signal": "Output artifacts significantly exceed expected scope (e.g., 20 deliverables instead of 1). Token budget exceeds estimate by >200%. Original brief references absent from final output.",
+      "recovery_action": "Add scope_validation step after content_creation. Inject original brief as hard constraint in agent prompt. Implement token budget checkpoints."
+    },
+    {
+      "id": "decision_contradiction_004",
+      "title": "Strategy Manager Reverses Prior Decision",
+      "category": "decision_contradiction",
+      "description": "The strategy_manager approves a group_buying discount tier in the synthesis phase. Later, the final_decision agent contradicts this by reverting to the original pricing without documented rationale.",
+      "root_cause": "Decision audit trail is not maintained across phases. Strategy synthesis outputs are not durably linked to final_decision inputs.",
+      "signal": "Two distinct decision artifacts with contradictory recommendations. No traceability between approved_strategy and final_decision. Timestamp shows decision reversal.",
+      "recovery_action": "Implement decision provenance logging. Final_decision must cite source artifacts by ID. Add decision_drift detection comparing approved_strategy vs final_decision."
+    },
+    {
+      "id": "memory_corruption_005",
+      "title": "Memory Candidate Corrupts Context Summary",
+      "category": "memory_corruption",
+      "description": "A malformed memory_candidate JSON from a prior run is loaded into context_summary. The corrupted data causes the strategy_manager to make decisions based on hallucinated prior context.",
+      "root_cause": "No schema validation on memory_candidate before context injection. Corrupted artifacts persist across sessions via the memory store.",
+      "signal": "Strategy decisions reference facts not present in current input. Memory store contains entries with invalid JSON or missing required fields. Agent outputs contain contradictory historical claims.",
+      "recovery_action": "Add Pydantic validation to memory_candidate schema. Implement memory_store integrity checks before loading. Quarantine corrupted entries and require manual review."
+    },
+    {
+      "id": "conflict_collapse_006",
+      "title": "Channel Analyst Recommendations Silenced by Dominant Agent",
+      "category": "conflict_collapse",
+      "description": "Channel analyst provides data-driven recommendation for TikTok priority. Growth_bull_agent argues strongly for WeChat. The director allows the bull agent to dominate, silencing the data perspective without acknowledgment.",
+      "root_cause": "Agent authority hierarchy not defined. No protocol for resolving data vs opinion conflicts. Director defaults to bull agent stance.",
+      "signal": "Channel recommendation artifact present but not cited in final_decision. Director logs show no reference to analyst output. Bull agent language dominates strategy summary.",
+      "recovery_action": "Define agent authority matrix in director_reflection_agent.yaml. Require explicit acknowledgment or rejection of data-driven recommendations. Add evidence_weight field to debate output."
+    },
+    {
+      "id": "risk_miss_007",
+      "title": "Financial Risk Assessment Skipped Under Time Pressure",
+      "category": "risk_miss",
+      "description": "User presents an urgent request. The flow accelerates to skip risk_review protocol entirely. The campaign launches with a pricing structure that violates platform promotion policies.",
+      "root_cause": "No override safeguard for risk_review. Time-sensitive flag bypasses critical review without explicit user consent acknowledgment.",
+      "signal": "Risk review log shows SKIPPED status. Campaign launches within same session without risk clearance. Platform policy violation appears in delivery output.",
+      "recovery_action": "Require explicit user consent to skip risk review. Log skip consent in run_state. Add minimum risk_review validation even in accelerated mode."
+    },
+    {
+      "id": "execution_drift_008",
+      "title": "Delivery Specialist Invents Platform Requirements",
+      "category": "execution_drift",
+      "description": "Delivery specialist adds platform-specific delivery constraints that do not exist in actual platform documentation. Content reflects fabricated technical requirements.",
+      "root_cause": "Agent training/prompt lacks citation requirement for platform specs. No grounding protocol forces verification against known platform docs.",
+      "signal": "Delivery plan contains technical claims without source references. Claims do not match known platform documentation. No verification event in execution log.",
+      "recovery_action": "Add citation requirement to delivery_specialist prompt. Implement grounding check comparing claims against platform schema. Require source links in output artifacts."
+    }
+  ]
+}

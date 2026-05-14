@@ -1,0 +1,83 @@
+{
+  "name": "User Ops Swarm Evaluation Rubric",
+  "version": "0.1.0",
+  "description": "Scoring rubric for comparing single-agent baseline vs. swarm output",
+  "dimensions": [
+    {
+      "name": "business_insight_depth",
+      "description": "Does the output demonstrate genuine understanding of QSR user operations dynamics?",
+      "weight": 2,
+      "levels": {
+        "1": "Generic marketing advice that could apply to any industry",
+        "2": "Mentions QSR context but with surface-level understanding",
+        "3": "Identifies 1-2 QSR-specific dynamics (e.g., delivery commission, fulfillment constraints)",
+        "4": "Demonstrates deep QSR knowledge across multiple dimensions (channels, margin, operations)",
+        "5": "Surface-level"
+      }
+    },
+    {
+      "name": "conflict_quality",
+      "description": "Does the Bull vs. Bear debate produce genuine organizational tension?",
+      "weight": 3,
+      "levels": {
+        "1": "Bull and Bear agree; no real tension",
+        "2": "Minor disagreements but both sides reach similar conclusions",
+        "3": "Genuine tension on 1-2 key issues",
+        "4": "Sharp conflict across 3+ dimensions with specific, actionable objections",
+        "5": "N/A (single-agent baseline)"
+      }
+    },
+    {
+      "name": "risk_identification_completeness",
+      "description": "Does the output identify and assess risks across all five dimensions?",
+      "weight": 3,
+      "levels": {
+        "1": "No risk assessment",
+        "2": "Mentions risk in passing without specifics",
+        "3": "Identifies risks in 1-2 dimensions",
+        "4": "Identifies risks in 3-4 dimensions with severity ratings",
+        "5": "Comprehensive risk assessment across all 5 dimensions with mitigations"
+      }
+    },
+    {
+      "name": "execution_actionability",
+      "description": "Could the strategy be handed to a team and executed without further interpretation?",
+      "weight": 2,
+      "levels": {
+        "1": "Vague recommendations; no specifics on channels, timing, or owners",
+        "2": "General direction but missing key execution details",
+        "3": "Complete enough for a senior manager to fill gaps",
+        "4": "Detailed execution plan with timeline, channels, offers, and owners",
+        "5": "Ready for team handoff with success metrics and review checkpoints"
+      }
+    },
+    {
+      "name": "decision_clarity",
+      "description": "Does the Director make a clear, defensible decision with rationale?",
+      "weight": 2,
+      "levels": {
+        "1": "No explicit decision or decision contradicts evidence",
+        "2": "Decision stated but without clear rationale",
+        "3": "Decision with rationale that references key debate outcomes",
+        "4": "Decision with explicit conditions for success and review plan",
+        "5": "Decision with success metrics, risk controls, and named review checkpoints"
+      }
+    },
+    {
+      "name": "reflection_reusability",
+      "description": "Could the memory candidate actually inform a future decision?",
+      "weight": 1,
+      "levels": {
+        "1": "Generic or obvious lesson; no reuse value",
+        "2": "Lesson specific to this campaign but condition for reuse is vague",
+        "3": "Lesson with specific reuse condition but confidence score is absent",
+        "4": "Complete memory candidate with confidence ≥ 0.5",
+        "5": "Memory candidate with high confidence (≥ 0.7) and precise reuse trigger"
+      }
+    }
+  ],
+  "max_score": 40,
+  "passing_score": 24,
+  "swarm_bonus_threshold": 4,
+  "note": "If swarm total score is not at least 4 points higher than single-agent baseline, the swarm mechanism is not providing sufficient value."
+}

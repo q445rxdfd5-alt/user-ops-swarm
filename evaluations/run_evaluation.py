@@ -111,14 +111,14 @@ def score_run(run_dir: Path, rubric: dict, is_baseline: bool) -> dict:
     total_weighted = 0.0
     total_weight = 0.0
 
-    # Map dimensions to artifact files
+    # Map dimensions to artifact files (numbered per ARTIFACTS in src/flow/user_ops_flow.py)
     dim_to_artifact = {
         "business_insight_depth": ["02_opportunity_analysis.md", "03_bull_bear_debate.md"],
         "conflict_quality": ["03_bull_bear_debate.md"],
-        "risk_identification_completeness": ["05_risk_review.md"],
-        "execution_actionability": ["04_strategy_summary.md", "06_final_decision.md"],
-        "decision_clarity": ["06_final_decision.md"],
-        "reflection_reusability": ["07_memory_candidate.md"],
+        "risk_identification_completeness": ["06_risk_review.md"],
+        "execution_actionability": ["04_strategy_summary.md", "05_execution_plan.md", "07_final_decision.md"],
+        "decision_clarity": ["07_final_decision.md"],
+        "reflection_reusability": ["08_memory_candidate.md"],
     }
 
     artifact_contents = {}
@@ -166,8 +166,7 @@ def run_swarm(input_file: str, run_id: str) -> Path:
 
 def generate_baseline(input_file: str, run_id: str) -> Path:
     """
-    Generate a single-agent baseline output.
-    In Phase 1, this runs a single Director agent with all context.
+    Generate a single-agent baseline output for comparison with the swarm.
     """
     from crewai import Agent, Task, Crew
 
@@ -312,17 +311,17 @@ def main():
     delta_total = s_total - b_total if swarm_scores else 0
     print(f"{'TOTAL (weighted avg)':<35} {b_total:>10.2f} {s_total:>10.2f} {delta_total:>+8.2f}")
 
-    if swarm_scores:
-        passing = rubric["passing_score"]
-        bonus = rubric["swarm_bonus_threshold"]
-        print(f"\nPassing score: {passing}")
-        print(f"Swarm bonus threshold: {bonus} pts above baseline")
-        if s_total >= passing and delta_total >= bonus:
-            print("✓ Swarm PASSES evaluation criteria")
-        elif s_total >= passing:
-            print("⚠ Swarm score is adequate but not sufficiently better than baseline")
-        else:
-            print("✗ Swarm does not meet minimum quality threshold")
+    # Normalized passing threshold: passing_score (40 raw) / num_dimensions (6) = 4.0
+    passing_normalized = rubric["passing_score"] / len(rubric["dimensions"])
+    bonus = rubric["swarm_bonus_threshold"]
+    print(f"\nPassing score: {rubric['passing_score']} raw ({passing_normalized:.2f} normalized)")
+    print(f"Swarm bonus threshold: {bonus} pts above baseline")
+    if s_total >= passing_normalized and delta_total >= bonus:
+        print("✓ Swarm PASSES evaluation criteria")
+    elif s_total >= passing_normalized:
+        print("⚠ Swarm score is adequate but not sufficiently better than baseline")
+    else:
+        print("✗ Swarm does not meet minimum quality threshold")
 
     # Save report
     report = {
