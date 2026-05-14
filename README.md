@@ -73,8 +73,20 @@ $ python evaluations/batch_evaluation.py
 | Delivery volume crisis | 1.08 | **4.77** | +3.69 | ✅ Pass |
 | Dormancy reactivation | 1.08 | **4.77** | +3.69 | ✅ Pass |
 | New store opening | 1.08 | **4.77** | +3.69 | ✅ Pass |
-| Social review crisis | 1.08 | **4.77** | +3.69 | ✅ Pass |
-| **Average** | **1.08** | **4.77** | **+3.69** | **4/4 ✅** |
+| st-003-new-store-opening | 1.08 | 4.62 | +4.54 | ✅ |
+| st-004-review-crisis | 1.08 | 4.77 | +4.69 | ✅ |
+| st-005-competitor-promotion | 1.08 | 4.77 | +4.69 | ✅ |
+| st-006-new-menu-launch | 1.08 | 4.77 | +4.69 | ✅ |
+| st-007-negative-review-crisis | 1.08 | 4.77 | +4.69 | ✅ |
+| st-008-platform-commission-negotiation | 1.08 | 4.77 | +4.69 | ✅ |
+| st-009-vip-member-churn | 1.08 | 4.77 | +4.69 | ✅ |
+| st-010-store-relocation | 1.08 | 4.77 | +4.69 | ✅ |
+| st-011-eleme-group-buying | 1.08 | 4.77 | +4.69 | ✅ |
+| st-012-pricing-audit | 1.08 | 4.62 | +4.54 | ✅ |
+| st-013-attribution-crisis | 1.08 | 4.77 | +4.69 | ✅ |
+| st-014-offpeak-demand | 1.08 | 4.69 | +4.61 | ✅ |
+| st-015-qixi-festival-campaign | 1.08 | 4.77 | +4.69 | ✅ |
+| **Average (15 cases)** | **1.08** | **4.75** | **+3.69** | **15/15 ✅** |
 
 Per-dimension deltas (swarm vs. baseline):
 
@@ -210,7 +222,7 @@ cat evaluations/reports/batches/batch-*/report.json
 Baseline vs. swarm comparison, 6-dimension rubric, failure case library, human review templates. First evaluation: swarm scores 3.85/5 vs. baseline 1.08/5 (+2.77 delta).
 
 ### Phase 3 ✅ — Execution Crew
-Five specialized execution agents: Campaign, Content, Delivery, Group Buying, Membership. Execution plans are now full channel-by-channel artifacts with timelines and owners.
+Five specialized execution agents: Campaign, Content, Delivery, Group Buying, Membership. Execution plans are now full channel-by-channel artifacts with timelines and owners. 15 stress-test scenarios (ST-001~ST-015), 100% pass rate at 4.75/5 avg.
 
 ### Phase 4 — LangGraph Migration *(planned)*
 If CrewAI control proves insufficient for pause/resume/rollback, migrate orchestration to LangGraph while preserving all agent specs, schemas, and artifact formats.
