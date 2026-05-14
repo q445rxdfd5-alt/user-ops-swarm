@@ -66,14 +66,28 @@ This project ships with a full evaluation harness: baseline single-agent vs. swa
 $ python evaluations/batch_evaluation.py
 ```
 
-**First batch results (4 scenarios):**
+**Latest batch results — MiniMax M2.1 (4 scenarios, May 2026):**
 
-| Scenario | Baseline | Swarm | Δ |
-|----------|----------|-------|---|
-| Delivery volume crisis | 1.08 | 3.85 | +2.77 |
-| [see batch report] | ... | ... | ... |
+| Scenario | Baseline | Swarm | Δ | Result |
+|----------|----------|-------|---|--------|
+| Delivery volume crisis | 1.08 | **4.77** | +3.69 | ✅ Pass |
+| Dormancy reactivation | 1.08 | **4.77** | +3.69 | ✅ Pass |
+| New store opening | 1.08 | **4.77** | +3.69 | ✅ Pass |
+| Social review crisis | 1.08 | **4.77** | +3.69 | ✅ Pass |
+| **Average** | **1.08** | **4.77** | **+3.69** | **4/4 ✅** |
 
-The swarm's biggest wins show up in **risk completeness** and **execution actionability** — exactly the dimensions where a multi-agent team with explicit mandates should outperform a single generalist. The gap on **conflict quality** is structural: single agents have no one to argue with.
+Per-dimension deltas (swarm vs. baseline):
+
+| Dimension | Δ |
+|-----------|---|
+| business_insight_depth | +4.00 |
+| execution_actionability | +4.00 |
+| risk_identification_completeness | +4.00 |
+| decision_clarity | +4.00 |
+| conflict_quality | +3.00 |
+| reflection_reusability | +3.00 |
+
+> Full report: `evaluations/reports/batches/batch-20260514-150655-report.json`
 
 ---
 
