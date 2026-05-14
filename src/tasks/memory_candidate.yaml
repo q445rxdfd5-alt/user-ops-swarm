@@ -36,7 +36,7 @@ expected_output: |
   Note: These are candidates only. Final memory writing is handled by external
   validation and storage processes.
 
-agent: DirectorReflectionAgent
+agent: ReflectionAgent
 
 tools:
   - read_file

@@ -22,7 +22,7 @@
       "id": "execution_drift_003",
       "title": "Agent Scope Creep Beyond Original Task Brief",
       "category": "execution_drift",
-      "description": "The content_creator expands the campaign scope from a single promotional post to a full content calendar spanning 3 platforms. The director_reflection_agent does not catch the scope expansion.",
+      "description": "The content_creator expands the campaign scope from a single promotional post to a full content calendar spanning 3 platforms. The director_agent does not catch the scope expansion.",
       "root_cause": "Task brief boundaries are not enforced in agent prompts. Content_creator has excessive autonomy without guardrails tied to original user request.",
       "signal": "Output artifacts significantly exceed expected scope (e.g., 20 deliverables instead of 1). Token budget exceeds estimate by >200%. Original brief references absent from final output.",
       "recovery_action": "Add scope_validation step after content_creation. Inject original brief as hard constraint in agent prompt. Implement token budget checkpoints."
@@ -52,7 +52,7 @@
       "description": "Channel analyst provides data-driven recommendation for TikTok priority. Growth_bull_agent argues strongly for WeChat. The director allows the bull agent to dominate, silencing the data perspective without acknowledgment.",
       "root_cause": "Agent authority hierarchy not defined. No protocol for resolving data vs opinion conflicts. Director defaults to bull agent stance.",
       "signal": "Channel recommendation artifact present but not cited in final_decision. Director logs show no reference to analyst output. Bull agent language dominates strategy summary.",
-      "recovery_action": "Define agent authority matrix in director_reflection_agent.yaml. Require explicit acknowledgment or rejection of data-driven recommendations. Add evidence_weight field to debate output."
+      "recovery_action": "Define agent authority matrix in director_agent.yaml. Require explicit acknowledgment or rejection of data-driven recommendations. Add evidence_weight field to debate output."
     },
     {
       "id": "risk_miss_007",

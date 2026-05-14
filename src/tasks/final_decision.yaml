@@ -34,7 +34,7 @@ expected_output: |
   - Next steps based on decision
   - Confidence in decision: very_confident, confident, neutral, uncertain
 
-agent: DirectorReflectionAgent
+agent: DirectorAgent
 
 tools:
   - read_file

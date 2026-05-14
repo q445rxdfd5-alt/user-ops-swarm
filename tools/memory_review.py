@@ -5,10 +5,9 @@ Human-in-the-loop gate for memory candidates.
 Usage: python tools/memory_review.py --run-id <run-id> [--approve|--reject]
 """
 import json
-import re
-import sys
+from datetime import date, datetime
+import json, re, sys
 from pathlib import Path
-from datetime import date
 
 RUN_DIR = Path(__file__).parent.parent / "runs"
 MEMORY_FILE = Path(__file__).parent.parent / "memory" / "memory_log.md"
@@ -118,9 +117,12 @@ def extract_memory_entry(data: dict, index: int = 0) -> str:
     c = data["candidates"][index]
     entry_id = f"M{data['run_date'].replace('-', '')}-{data['run_id'][:8]}"
     today = date.today().isoformat()
+    now_ts = datetime.now().isoformat()
 
     entry = f"""### {entry_id} | {today} | operational_pattern
 
+**Timestamp**: {now_ts}
+**Approved By**: HUMAN
 **Scenario**: {c.get('scenario', data['scenario'])[:400]}
 **Segment**: {c.get('segment', 'N/A')[:200]}
 **Channel**: {c.get('channel', 'N/A')[:200]}

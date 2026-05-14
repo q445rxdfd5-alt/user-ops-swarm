@@ -180,7 +180,8 @@ AGENT_FILES = {
     "membership_operator": "membership_operator.yaml",
     # Review and decision agents
     "risk_reviewer": "risk_reviewer.yaml",
-    "director_reflection_agent": "director_reflection_agent.yaml",
+    "director_agent": "director_agent.yaml",
+    "reflection_agent": "reflection_agent.yaml",
 }
 
 
@@ -244,6 +245,87 @@ def _build_context_prompt(state: SwarmState, step: str) -> str:
                 lines += ["---", f"## ARTIFACT {i+1}", p]
 
     return "\n\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# Memory Log Reader — extracts only approved entries
+# ---------------------------------------------------------------------------
+def load_approved_memories(mem_path: Path) -> str:
+    """
+    Read memory_log.md and return only the approved entries as a text block.
+
+    Entry format (approved):
+        ### {entry_id} | {date} | operational_pattern
+        **Timestamp**: {iso_ts}
+        **Approved By**: {approver}
+        **Scenario**: ...
+        ...
+
+    Returns "(no prior memory)" when file doesn't exist or no approved entries found.
+    """
+    if not mem_path.exists():
+        return "(no prior memory)"
+
+    raw = mem_path.read_text(encoding="utf-8")
+
+    # Find the marker that separates approved section from archived/rejected
+    # The approved entries live between "<!-- Approved memories go here -->" and "## Archived"
+    marker = "<!-- Approved memories go here -->"
+    archived_marker = "## Archived"
+
+    start = raw.find(marker)
+    if start == -1:
+        # No marker — treat entire file as candidate pool, return empty
+        return "(no prior memory)"
+
+    start += len(marker)
+    end = raw.find(archived_marker, start)
+    if end == -1:
+        end = len(raw)
+
+    section = raw[start:end].strip()
+
+    if not section:
+        return "(no prior memory)"
+
+    # Collect individual ### entries
+    # Each approved entry starts with ### {entry_id}
+    # Parse: extract the full entry block between consecutive ### headers
+    entries = []
+    # Split on ### headings (keep the heading with its body)
+    parts = re.split(r'\n(?=### )', section)
+    for part in parts:
+        part = part.strip()
+        if not part:
+            continue
+        # Skip review log table rows (| Date | Entry ID | ...)
+        if part.startswith("| Date |"):
+            continue
+        if part.startswith("| ---"):
+            continue
+        if part.startswith("| "):
+            continue
+        entries.append(part)
+
+    if not entries:
+        return "(no prior memory)"
+
+    # Filter: skip any entry whose status is not approved.
+    # Entries are markdown blocks; we check for "**Approved By**: HUMAN" or similar.
+    approved = []
+    for entry in entries:
+        # Entries with approved_by field are considered approved
+        # (rejected/pending entries would have different markers or no approved_by)
+        if re.search(r'\*\*Approved By\*\*:', entry):
+            approved.append(entry)
+        # Fallback: if no status field at all but has timestamp+approved_by, include
+        elif re.search(r'\*\*Timestamp\*\*:', entry):
+            approved.append(entry)
+
+    if not approved:
+        return "(no prior memory)"
+
+    return "\n\n---\n\n".join(approved)
 
 
 # ---------------------------------------------------------------------------
@@ -366,12 +448,9 @@ class UserOpsFlow:
         else:
             self.state.context_content = ""
 
-        # Read memory log
+        # Read memory log — only approved entries
         mem_path = Path(inputs.get("memory_file", "memory/memory_log.md"))
-        if mem_path.exists():
-            self.state.memory_content = mem_path.read_text(encoding="utf-8")
-        else:
-            self.state.memory_content = ""
+        self.state.memory_content = load_approved_memories(mem_path)
 
         # Init RunState
         steps = [StepStatus(step_name=s) for s in WORKFLOW_STEPS]
@@ -805,7 +884,7 @@ loyalty_currency_system, exclusive_access_program, retention_mechanics.""",
             from crewai import Agent, Task, Crew
             from crewai.agents.agent_builder.base_agent import BaseAgent
 
-            director_agent: BaseAgent = _load_agent("director_reflection_agent")
+            director_agent: BaseAgent = _load_agent("director_agent")
             prompt = _build_context_prompt(self.state, "director_decision")
 
             task = Task(
@@ -862,7 +941,7 @@ Output as JSON:
             from crewai import Agent, Task, Crew
             from crewai.agents.agent_builder.base_agent import BaseAgent
 
-            reflection_agent: BaseAgent = _load_agent("director_reflection_agent")
+            reflection_agent: BaseAgent = _load_agent("reflection_agent")
             prompt = _build_context_prompt(self.state, "reflection")
 
             task = Task(

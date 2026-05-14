@@ -70,22 +70,21 @@ $ python evaluations/batch_evaluation.py
 
 | Scenario | Baseline | Swarm | Δ | Result |
 |----------|----------|-------|---|--------|
-| Delivery volume crisis | 1.08 | **4.77** | +3.69 | ✅ Pass |
-| Dormancy reactivation | 1.08 | **4.77** | +3.69 | ✅ Pass |
-| New store opening | 1.08 | **4.77** | +3.69 | ✅ Pass |
-| st-003-new-store-opening | 1.08 | 4.62 | +4.54 | ✅ |
-| st-004-review-crisis | 1.08 | 4.77 | +4.69 | ✅ |
-| st-005-competitor-promotion | 1.08 | 4.77 | +4.69 | ✅ |
-| st-006-new-menu-launch | 1.08 | 4.77 | +4.69 | ✅ |
-| st-007-negative-review-crisis | 1.08 | 4.77 | +4.69 | ✅ |
-| st-008-platform-commission-negotiation | 1.08 | 4.77 | +4.69 | ✅ |
-| st-009-vip-member-churn | 1.08 | 4.77 | +4.69 | ✅ |
-| st-010-store-relocation | 1.08 | 4.77 | +4.69 | ✅ |
-| st-011-eleme-group-buying | 1.08 | 4.77 | +4.69 | ✅ |
-| st-012-pricing-audit | 1.08 | 4.62 | +4.54 | ✅ |
-| st-013-attribution-crisis | 1.08 | 4.77 | +4.69 | ✅ |
-| st-014-offpeak-demand | 1.08 | 4.69 | +4.61 | ✅ |
-| st-015-qixi-festival-campaign | 1.08 | 4.77 | +4.69 | ✅ |
+| st-001 delivery-decline | 1.08 | 4.77 | +3.69 | ✅ Pass |
+| st-002 dormancy-reactivation | 1.08 | 4.69 | +3.61 | ✅ Pass |
+| st-003 new-store-opening | 1.08 | 4.62 | +3.54 | ✅ Pass |
+| st-004 review-crisis | 1.08 | 4.77 | +3.69 | ✅ Pass |
+| st-005 competitor-promotion | 1.08 | 4.77 | +3.69 | ✅ Pass |
+| st-006 new-menu-launch | 1.08 | 4.77 | +3.69 | ✅ Pass |
+| st-007 negative-review-crisis | 1.08 | 4.77 | +3.69 | ✅ Pass |
+| st-008 platform-commission-negotiation | 1.08 | 4.77 | +3.69 | ✅ Pass |
+| st-009 vip-member-churn | 1.08 | 4.77 | +3.69 | ✅ Pass |
+| st-010 store-relocation | 1.08 | 4.77 | +3.69 | ✅ Pass |
+| st-011 eleme-group-buying | 1.08 | 4.77 | +3.69 | ✅ Pass |
+| st-012 pricing-audit | 1.08 | 4.62 | +3.54 | ✅ Pass |
+| st-013 attribution-crisis | 1.08 | 4.77 | +3.69 | ✅ Pass |
+| st-014 offpeak-demand | 1.08 | 4.69 | +3.61 | ✅ Pass |
+| st-015 qixi-festival-campaign | 1.08 | 4.77 | +3.69 | ✅ Pass |
 | **Average (15 cases)** | **1.08** | **4.75** | **+3.69** | **15/15 ✅** |
 
 Per-dimension deltas (swarm vs. baseline):
